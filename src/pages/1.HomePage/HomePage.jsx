@@ -4,7 +4,7 @@ import TopicSection from '../../components/home/topicSection.jsx';
 
 const HomePage = () => {
   return (
-    <div className="bg-white min-h-screen flex flex-col w-full">
+    <div className="bg-[#F5F3F0]">
       {/* Hero Section */}
       <HeroSection />
 
