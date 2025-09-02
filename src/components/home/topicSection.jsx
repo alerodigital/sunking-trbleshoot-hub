@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import FaqList from './FaqList.jsx';
+import FaqList from './faqList.jsx';
 
 // Mock data to match UI
 const topics = [
@@ -18,7 +18,7 @@ const allFaqs = [
 
 const TopicSection = () => {
   const [selectedTopic, setSelectedTopic] = useState('');
-  const [faqs, setFaqs] = useState(allFaqs);
+  const [faqs] = useState(allFaqs);
 
   const filteredFaqs = selectedTopic
     ? faqs.filter(faq => faq.topicId === selectedTopic)
