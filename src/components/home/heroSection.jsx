@@ -1,47 +1,69 @@
 import React, { useState } from 'react';
+import { Icon } from '@iconify/react';
 
 const HeroSection = () => {
   const [searchTerm, setSearchTerm] = useState('');
 
   return (
-    <div className="relative pt-24 pb-32 overflow-hidden bg-[#F7F5F0]">
-      {/* Container for the sun graphic */}
-      <div className="absolute top-0 right-0 h-full w-full max-w-lg lg:max-w-2xl transform translate-x-1/2 -translate-y-1/2 opacity-100 hidden lg:block">
-        <img
-          src="/rays.png"
-          alt="Abstract sun rays graphic"
-          className="w-full h-full object-contain"
-        />
-      </div>
-
-      {/* Content Container */}
-      <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        {/* Header Text */}
-        <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight sm:text-5xl md:text-6xl">
-          Troubleshooting hub
-        </h1>
-        
-        {/* Search Bar */}
-        <div className="mt-10 max-w-xl mx-auto flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-4">
-          <label htmlFor="search" className="sr-only">Search</label>
-          <input
-            id="search"
-            name="search"
-            type="text"
-            className="flex-grow w-full rounded-full border-2 border-gray-300 pl-4 pr-3 py-3 leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#FFDE4C] text-sm md:text-base"
-            placeholder="How can we help..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+    <>
+      <div className="relative pt-24 pb-16 overflow-hidden bg-[#F7F5F0]">
+        {/* Container for the sun graphic */}
+        <div className="absolute top-0 right-0 h-full w-full max-w-lg lg:max-w-2xl transform translate-x-1/2 -translate-y-1/2 opacity-100 hidden lg:block">
+          <img
+            src="/sun.png"
+            alt="Sun rays graphic"
+            className="w-full h-full object-contain"
           />
-          <button
-            type="button"
-            className="w-full md:w-auto px-6 py-3 border border-transparent text-base font-medium rounded-full shadow-sm text-black bg-[#FFDE4C] hover:bg-[#FFD32F] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#FFDE4C]"
-          >
-            Search
-          </button>
+        </div>
+
+        {/* Content Container */}
+        <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          {/* Header Text */}
+          <h1 className="font-urbanist font-extrabold text-56 leading-53 text-gray-900 mb-10 tracking-normal">
+            Troubleshooting hub
+          </h1>
+          
+          {/* Search Bar */}
+          <div className="mx-auto w-700">
+            <div className="relative flex items-center bg-white rounded-md border border-gray-300 shadow-sm h-60-custom gap-2">
+              <div className="absolute left-4 flex items-center pointer-events-none">
+                <Icon icon="material-symbols:search" className="h-5 w-5 text-gray-400" />
+              </div>
+              <input
+                id="search"
+                name="search"
+                type="text"
+                className="flex-1 rounded-full border-0 pl-12 pr-32 bg-transparent placeholder-gray-500 focus:outline-none focus:ring-0 text-sm h-60-custom"
+                placeholder="How can we help..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+              <button
+                type="button"
+                className="absolute right-2 w-101 h-42 py-2 px-6 cu rounded-full text-sm font-medium text-black bg-[#F6D852] hover:bg-[#F0C040] focus:outline-none transition-colors duration-200"
+              >
+                Search
+              </button>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
+
+      {/* Orange Section */}
+      <div className="bg-[#F36744] py-12 mt-16">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex justify-center">
+          <div className="w-795 h-104 flex flex-col gap-3.5 text-start">
+            <p className="font-urbanist font-normal text-2xl leading-[30px] text-black">
+              This is a One-Stop Help Center that guides you to solve issues, keeping both the field and Service Desk efficient.
+            </p>
+            <p className="font-sans font-normal text-base leading-[30px] text-black">
+              For more information, or if you have queries that aren't answered here, please{' '}
+              <span className="font-sans font-normal text-base leading-[30px] underline decoration-solid">contact us</span> for more details.
+            </p>
+          </div>
+        </div>
+      </div>
+    </>
   );
 };
 

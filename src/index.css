@@ -1,2 +1,52 @@
 
+@import url('https://fonts.googleapis.com/css2?family=Urbanist:wght@100;200;300;400;500;600;700;800;900&display=swap');
+
 @import "tailwindcss";
+
+@layer utilities {
+  .text-56 {
+    font-size: 56px;
+  }
+  .leading-53 {
+    line-height: 53px;
+  }
+  .w-700 {
+    width: 700px;
+  }
+  .h-60-custom {
+    height: 60px;
+  }
+  .w-101 {
+    width: 101px;
+  }
+  .h-42 {
+    height: 42px;
+  }
+  .w-137 {
+    width: 137px;
+  }
+  .-right-369 {
+    right: -369px;
+  }
+  .gap-18 {
+    gap: 4.5rem; /* 72px */
+  }
+  .h-37 {
+    height: 37px;
+  }
+  .h-72 {
+    height: 72px;
+  }
+  .font-urbanist {
+    font-family: 'Urbanist', sans-serif;
+  }
+  .bg-sun-yellow {
+    background-color: #FFCE00;
+  }
+  .w-795 {
+    width: 795px;
+  }
+  .h-104 {
+    height: 104px;
+  }
+}
