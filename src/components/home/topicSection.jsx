@@ -1,45 +1,63 @@
 import React, { useState } from 'react';
-import FaqList from './faqList.jsx';
+import { Icon } from '@iconify/react';
+import { topics, faqs, popularTopics } from '../../data/topicsData.js';
 
-// Mock data to match UI
-const topics = [
-  { id: '1', name: 'Satellite Issues and Activation' },
-  { id: '2', name: 'General Questions' },
-  { id: '3', name: 'Account Management' },
-];
+const PopularTopicItem = ({ faq }) => {
+  const [isOpen, setIsOpen] = useState(false);
 
-const allFaqs = [
-  { id: '1', topicId: '1', question: 'StarTimes Activation Steps', answer: 'You can search or browse topics...' },
-  { id: '2', topicId: '1', question: 'Satellite Escalation Procedure', answer: 'You can search or browse topics...' },
-  { id: '3', topicId: '1', question: 'Card Replacements', answer: 'Go to the login page and click "Forgot password"...' },
-  { id: '4', topicId: '2', question: 'My app is not loading.', answer: 'Try clearing your cache and cookies, or reinstalling the app...' },
-  { id: '5', topicId: '3', question: 'The search bar is not working.', answer: 'Check your network connection and try again...' },
-];
+  return (
+    <div className="border-b border-gray-800">
+      <button
+        className="w-full flex justify-between items-center py-4 text-left hover:bg-gray-50 cursor-pointer"
+        onClick={() => setIsOpen(!isOpen)}
+        aria-expanded={isOpen}
+      >
+        <span className="text-lg font-medium text-gray-900">{faq.question}</span>
+        <svg
+          className={`w-5 h-5 transform transition-transform duration-200 ${isOpen ? 'rotate-45' : ''}`}
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          strokeWidth="2"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+        </svg>
+      </button>
+      {isOpen && (
+        <div className="pb-4 pr-8">
+          <p className="text-gray-600">{faq.answer}</p>
+        </div>
+      )}
+    </div>
+  );
+};
 
 const TopicSection = () => {
   const [selectedTopic, setSelectedTopic] = useState('');
-  const [faqs] = useState(allFaqs);
 
-  const filteredFaqs = selectedTopic
-    ? faqs.filter(faq => faq.topicId === selectedTopic)
-    : allFaqs;
+  // Show popular topics by default, filter by selected topic when dropdown changes
+  const displayedFaqs = selectedTopic === '' 
+    ? faqs.filter(faq => popularTopics.some(popular => popular.title === faq.question))
+    : faqs.filter(faq => faq.topicId === selectedTopic);
+
+  // Get section title based on selection
+  const sectionTitle = selectedTopic === ''
+    ? 'Popular Topics'
+    : topics.find(topic => topic.id === selectedTopic)?.name || 'Popular Topics';
 
   return (
-    <div className="container mx-auto p-4 sm:p-6 lg:p-8">
+    <div className="w-[1210px] h-[530px] mx-auto p-6 flex flex-col gap-[30px]">
       {/* Section Header */}
-      <h2 className="text-3xl font-bold text-gray-900 mb-6 text-center">
+      <h2 className="text-2xl font-semibold text-gray-900">
         Topic
       </h2>
       
       {/* Topic Dropdown */}
-      <div className="w-full max-w-sm mx-auto mb-8">
-        <label htmlFor="topics" className="sr-only">Select a topic</label>
+      <div className="relative w-[596px] h-[48px]">
         <select
-          id="topics"
-          name="topics"
           value={selectedTopic}
           onChange={(e) => setSelectedTopic(e.target.value)}
-          className="mt-1 block w-full rounded-md border-2 border-gray-300 shadow-sm py-3 px-4 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-lg"
+          className="w-full h-full pt-2 pr-12 pb-2 pl-4 border-[1.5px] border-gray-300 rounded-[5px] bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none cursor-pointer"
         >
           <option value="">Select a Topic</option>
           {topics.map(topic => (
@@ -48,11 +66,21 @@ const TopicSection = () => {
             </option>
           ))}
         </select>
+        <Icon 
+          icon="mdi:chevron-down" 
+          className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-900 pointer-events-none"
+        />
       </div>
 
-      {/* FAQs List */}
-      <h3 className="text-xl font-bold mb-4 text-center">Popular Topics</h3>
-      <FaqList faqs={filteredFaqs} />
+      {/* Topics Section */}
+      <div className="flex-1">
+        <h3 className="text-xl font-semibold text-gray-900 mb-6">{sectionTitle}</h3>
+        <div className="space-y-0">
+          {displayedFaqs.map((faq) => (
+            <PopularTopicItem key={faq.id} faq={faq} />
+          ))}
+        </div>
+      </div>
     </div>
   );
 };
