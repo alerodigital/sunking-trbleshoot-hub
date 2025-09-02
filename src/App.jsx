@@ -1,35 +1,36 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import Navbar from './components/navigation/Navbar.jsx';
+import Footer from './components/navigation/Footer.jsx';
+import HomePage from './pages/1.HomePage/HomePage.jsx';
+import AdminPage from './pages/2.AdminPage/AdminPage.jsx';
+import Login from './pages/0.Auth/login.jsx';
+import { AnimatePresence } from 'framer-motion';
 
-function App() {
-  const [count, setCount] = useState(0)
-
+const App = () => {
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <BrowserRouter>
+      {/* Main application container */}
+      <div className="flex flex-col min-h-screen">
+        {/* Navbar always visible */}
+        <Navbar />
+        
+        {/* Main content area */}
+        <AnimatePresence mode="wait">
+          <div className="flex-grow">
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/admin" element={<AdminPage />} />
+              <Route path="/login" element={<Login />} />
+            </Routes>
+          </div>
+        </AnimatePresence>
+        
+        {/* Footer always visible */}
+        <Footer />
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    </BrowserRouter>
+  );
+};
 
-export default App
+export default App;
