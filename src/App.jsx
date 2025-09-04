@@ -11,18 +11,19 @@ import { AnimatePresence } from 'framer-motion';
 const AppContent = () => {
   const location = useLocation();
   const isAuthPage = location.pathname === '/login' || location.pathname === '/reset-password';
+  const isAdminPage = location.pathname.startsWith('/admin');
 
   return (
     <div className="flex flex-col min-h-screen">
       {/* Conditionally render Navbar */}
-      {!isAuthPage && <Navbar />}
+      {!isAuthPage && !isAdminPage && <Navbar />}
       
       {/* Main content area */}
       <AnimatePresence mode="wait">
-        <div className={isAuthPage ? "min-h-screen" : "flex-grow"}>
+        <div className={isAuthPage || isAdminPage ? "min-h-screen" : "flex-grow"}>
           <Routes>
             <Route path="/" element={<HomePage />} />
-            <Route path="/admin" element={<AdminPage />} />
+            <Route path="/admin/*" element={<AdminPage />} />
             <Route path="/login" element={<Login />} />
             <Route path="/reset-password" element={<ResetPassword />} />
           </Routes>
@@ -30,7 +31,7 @@ const AppContent = () => {
       </AnimatePresence>
       
       {/* Conditionally render Footer */}
-      {!isAuthPage && <Footer />}
+      {!isAuthPage && !isAdminPage && <Footer />}
     </div>
   );
 };

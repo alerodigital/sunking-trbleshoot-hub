@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
@@ -11,6 +11,7 @@ const loginSchema = Yup.object().shape({
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
   
   const initialValues = {
     email: '',
@@ -18,9 +19,15 @@ const Login = () => {
   };
 
   const handleSubmit = (values, { setSubmitting }) => {
-    // Handle login logic here
-    console.log(values);
-    setSubmitting(false);
+    // Simulate login logic
+    console.log('Login attempt:', values);
+    
+    // Simulate API call
+    setTimeout(() => {
+      // On successful login, navigate to admin page
+      navigate('/admin');
+      setSubmitting(false);
+    }, 1000);
   };
 
   return (

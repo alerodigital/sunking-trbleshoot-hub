@@ -1,18 +1,27 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import AdminNavbar from '../../components/admin/adminNavbar.jsx';
+import Sidebar from '../../components/admin/sidebar.jsx';
+import TopicsPage from './TopicsPage.jsx';
+import TopicDetailPage from './TopicDetailPage.jsx';
+import SettingsPage from './SettingsPage.jsx';
 
 const AdminPage = () => {
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4"
-    >
-      {/* Admin Content */}
-      <h2 className="text-3xl font-bold text-gray-900">Admin Dashboard</h2>
-      <p className="mt-4 text-gray-600">This is where you will manage your topics and FAQs.</p>
-    </motion.div>
+    <div className="min-h-screen bg-gray-50">
+      <AdminNavbar />
+      <div className="flex">
+        <Sidebar />
+        <div className="flex-1">
+          <Routes>
+            <Route path="/" element={<Navigate to="/admin/topics" replace />} />
+            <Route path="/topics" element={<TopicsPage />} />
+            <Route path="/topics/:topicId" element={<TopicDetailPage />} />
+            <Route path="/settings" element={<SettingsPage />} />
+          </Routes>
+        </div>
+      </div>
+    </div>
   );
 };
 
