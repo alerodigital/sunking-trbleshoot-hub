@@ -3,56 +3,37 @@ export const subtopicsData = {
   'satellite-issues': [
     {
       id: 'sat-001',
-      title: 'Initial Satellite Setup',
-      description: 'Step-by-step guide for setting up satellite equipment for first-time users',
-      content: 'Detailed instructions for satellite installation and configuration...',
+      title: 'StarTimes Activation Steps',
+      description: 'StarTimes activation happens after a mid upgrade prospect ticket has been approved. The link enables understanding of the steps for account creation.',
+      content: 'Detailed instructions for StarTimes activation process and account creation steps...',
       formLinks: [
         {
-          name: 'Installation Request Form',
-          url: 'https://forms.google.com/installation-request'
+          name: 'Activation Guide Form',
+          url: 'https://forms.google.com/startimes-activation'
         }
       ]
     },
     {
       id: 'sat-002',
-      title: 'Signal Strength Issues',
-      description: 'Troubleshooting weak or intermittent satellite signals',
-      content: 'Common causes and solutions for signal strength problems...',
+      title: 'Satellite Escalation Procedure',
+      description: 'Satellite escalation involves all concerns of Satellite Installation, also, Satellite and Antenna troubleshooting',
+      content: 'Complete guide for satellite escalation procedures, installation concerns, and antenna troubleshooting...',
       formLinks: [
         {
-          name: 'Signal Issue Report',
-          url: 'https://forms.google.com/signal-issue'
+          name: 'Escalation Report Form',
+          url: 'https://forms.google.com/satellite-escalation'
         }
       ]
     },
     {
       id: 'sat-003',
-      title: 'Activation Problems',
-      description: 'Resolving issues with satellite service activation',
-      content: 'Solutions for activation failures and account setup problems...',
+      title: 'Card Replacements',
+      description: 'StarTimes card replacement is done at the shop. The SSE will receive the card that needs to be replaced, request the Warehouse for a replacement, this is received.',
+      content: 'Step-by-step process for StarTimes card replacement through shop and warehouse coordination...',
       formLinks: [
         {
-          name: 'Activation Support Form',
-          url: 'https://forms.google.com/activation-support'
-        }
-      ]
-    },
-    {
-      id: 'sat-004',
-      title: 'Weather-Related Disruptions',
-      description: 'Managing satellite connectivity during adverse weather conditions',
-      content: 'Understanding weather impact on satellite services and mitigation strategies...',
-      formLinks: []
-    },
-    {
-      id: 'sat-005',
-      title: 'Equipment Replacement',
-      description: 'Process for replacing faulty or damaged satellite equipment',
-      content: 'Guidelines for equipment diagnostics and replacement procedures...',
-      formLinks: [
-        {
-          name: 'Equipment Replacement Request',
-          url: 'https://forms.google.com/equipment-replacement'
+          name: 'Card Replacement Request',
+          url: 'https://forms.google.com/card-replacement'
         }
       ]
     }

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import AdminNavbar from '../../components/admin/adminNavbar.jsx';
 import Sidebar from '../../components/admin/sidebar.jsx';
@@ -7,12 +7,14 @@ import TopicDetailPage from './TopicDetailPage.jsx';
 import SettingsPage from './SettingsPage.jsx';
 
 const AdminPage = () => {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
   return (
     <div className="min-h-screen bg-gray-50">
-      <AdminNavbar />
+      <AdminNavbar onMenuClick={() => setSidebarOpen(!sidebarOpen)} />
       <div className="flex">
-        <Sidebar />
-        <div className="flex-1">
+        <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+        <div className="flex-1 min-w-0">
           <Routes>
             <Route path="/" element={<Navigate to="/admin/topics" replace />} />
             <Route path="/topics" element={<TopicsPage />} />
@@ -21,6 +23,14 @@ const AdminPage = () => {
           </Routes>
         </div>
       </div>
+      
+      {/* Mobile sidebar overlay */}
+      {sidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
     </div>
   );
 };

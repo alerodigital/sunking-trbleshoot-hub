@@ -68,24 +68,24 @@ const AddSubtopicModal = ({ isOpen, onClose, onSubmit, topicId }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg w-full max-w-4xl max-h-[95vh] overflow-y-auto shadow-2xl">
+      <div className="bg-white rounded-lg w-full max-w-4xl sm:max-w-2xl md:max-w-3xl lg:max-w-4xl max-h-[95vh] overflow-y-auto shadow-2xl">
         {/* Yellow Header Bar */}
         <div className="bg-yellow-400 h-2 rounded-t-lg"></div>
         
         {/* Modal Header with Close Button */}
-        <div className="flex justify-between items-center p-8 pb-4">
-          <h2 className="text-3xl font-bold text-black">Add Subtopic</h2>
+        <div className="flex justify-between items-center p-4 sm:p-6 lg:p-8 pb-2 sm:pb-3 lg:pb-4">
+          <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-black">Add Subtopic</h2>
           <button
             onClick={onClose}
             className="p-2 hover:bg-gray-100 rounded-full transition-colors cursor-pointer"
             type="button"
           >
-            <Icon icon="mdi:close" className="w-6 h-6 text-black" />
+            <Icon icon="mdi:close" className="w-5 h-5 sm:w-6 sm:h-6 text-black" />
           </button>
         </div>
         
         {/* Modal Content */}
-        <div className="px-8 pb-8">
+        <div className="px-4 sm:px-6 lg:px-8 pb-4 sm:pb-6 lg:pb-8">
           <Formik
             initialValues={initialValues}
             validationSchema={validationSchema}
