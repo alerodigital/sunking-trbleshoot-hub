@@ -8,14 +8,16 @@ const Navbar = () => {
         <div className="flex justify-between items-center h-72">
           {/* Logo Section */}
           <div className="flex items-center">
-            <img 
-              src="/logo.png" 
-              alt="Sun King" 
-              className="h-10 w-auto"
-              onError={(e) => {
-                e.target.style.display = 'none';
-              }}
-            />
+            <Link to="/">
+              <img 
+                src="/logo.png" 
+                alt="Sun King" 
+                className="h-10 w-auto"
+                onError={(e) => {
+                  e.target.style.display = 'none';
+                }}
+              />
+            </Link>
           </div>
 
           {/* Admin Login Button */}

@@ -38,7 +38,7 @@ const ResetPassword = () => {
           <p className="text-gray-600 text-sm leading-relaxed">
             We'll email you instructions to reset your password. If you don't have access to 
             your email contact the{' '}
-            <span className="text-yellow-600 font-medium underline underline-offset-2">our support team</span>.
+            <span className="text-yellow-600 font-medium cursor-pointer underline underline-offset-2">our support team</span>.
           </p>
         </div>
         
@@ -70,7 +70,7 @@ const ResetPassword = () => {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="flex-1 bg-yellow-400 hover:bg-yellow-500 text-black font-semibold py-3 px-4 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-2"
+                  className="flex-1 bg-yellow-400 hover:bg-yellow-500 text-black font-semibold py-3 px-4 cursor-pointer rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-2"
                 >
                   {isSubmitting ? 'Sending...' : 'Reset password'}
                 </button>
