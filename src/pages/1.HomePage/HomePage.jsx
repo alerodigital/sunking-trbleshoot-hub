@@ -4,12 +4,12 @@ import TopicSection from '../../components/home/topicSection.jsx';
 
 const HomePage = () => {
   return (
-    <div className="bg-[#F5F3F0]">
+    <div>
       {/* Hero Section */}
-      <HeroSection />
+      <HeroSection className="bg-[#F5F3F0]" />
 
       {/* Topics and FAQs Section */}
-      <TopicSection />
+      <TopicSection className="bg-white" />
     </div>
   );
 };

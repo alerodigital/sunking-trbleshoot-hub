@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const Navbar = () => {
   return (
@@ -19,13 +20,12 @@ const Navbar = () => {
 
           {/* Admin Login Button */}
           <div>
-            <a
-              href="/login"
+            <Link
+              to="/login"
               className="inline-flex items-center justify-center w-137 h-37 py-2 px-6 rounded-full text-sm font-medium text-yellow-400 bg-black hover:bg-gray-800 transition-colors duration-200"
-              onClick={(e) => e.preventDefault()}
             >
               Admin Login
-            </a>
+            </Link>
           </div>
         </div>
       </div>

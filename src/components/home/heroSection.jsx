@@ -24,7 +24,7 @@ const HeroSection = () => {
           </h1>
           
           {/* Search Bar - Responsive Width and Height */}
-          <div className="mx-auto w-full max-w-xs sm:max-w-md md:max-w-lg lg:max-w-2xl xl:max-w-3xl">
+          <div className="mx-auto w-full max-w-xs sm:max-w-md md:max-w-lg lg:max-w-2xl xl:max-w-3xl md:pb-6">
             <div className="relative flex items-center bg-white rounded-md border border-gray-300 shadow-sm h-12 sm:h-14 md:h-16 gap-2">
               <div className="absolute left-3 sm:left-4 flex items-center pointer-events-none">
                 <Icon icon="material-symbols:search" className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400" />
@@ -50,7 +50,7 @@ const HeroSection = () => {
       </div>
 
       {/* Orange Section - Responsive */}
-      <div className="bg-[#F36744] py-8 sm:py-10 md:py-12 mt-8 sm:mt-12 md:mt-16">
+      <div className="bg-[#F36744] py-8 sm:py-10 md:py-12">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex justify-center">
           <div className="w-full max-w-xs sm:max-w-md md:max-w-lg lg:max-w-2xl xl:max-w-4xl flex flex-col gap-3 sm:gap-3.5 text-start">
             <p className="font-urbanist font-normal text-lg sm:text-xl md:text-2xl leading-6 sm:leading-7 md:leading-8 text-black">
@@ -58,7 +58,7 @@ const HeroSection = () => {
             </p>
             <p className="font-sans font-normal text-sm sm:text-base leading-6 sm:leading-7 md:leading-8 text-black">
               For more information, or if you have queries that aren't answered here, please{' '}
-              <span className="font-sans font-normal text-sm sm:text-base leading-6 sm:leading-7 md:leading-8 underline decoration-solid">contact us</span> for more details.
+              <span className="font-sans font-normal text-sm sm:text-base leading-6 sm:leading-7 md:leading-8 underline decoration-solid cursor-pointer">contact us</span> for more details.
             </p>
           </div>
         </div>
