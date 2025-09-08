@@ -1,5 +1,5 @@
 // AddSubtopicModal.jsx
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Icon } from '@iconify/react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
@@ -28,7 +28,7 @@ const validationSchema = Yup.object({
 });
 
 const AddSubtopicModal = ({ isOpen, onClose, onSubmit, topicId, isLoading }) => {
-  if (!isOpen) return null;
+  
 
   const [error, setError] = useState('');
 
@@ -68,7 +68,37 @@ const AddSubtopicModal = ({ isOpen, onClose, onSubmit, topicId, isLoading }) => 
   //   onClose();
   // };
 
-  const handleFormSubmit = async (values, { resetForm }) => {
+  // const handleFormSubmit = async (values, { resetForm }) => {
+  //   try {
+  //     setError('');
+      
+  //     const formLinks = [];
+  //     if (values.formLinksEnabled) {
+  //       if (values.formLink1Name && values.formLink1Url) {
+  //         formLinks.push({ name: values.formLink1Name, url: values.formLink1Url });
+  //       }
+  //       if (values.formLink2Name && values.formLink2Url) {
+  //         formLinks.push({ name: values.formLink2Name, url: values.formLink2Url });
+  //       }
+  //     }
+
+  //     const subtopicData = {
+  //       title: values.title,
+  //       //description: values.title, // Using title as description for now
+  //       content: values.content,
+  //       formLinks
+  //     };
+
+  //     await onSubmit(subtopicData);
+  //     resetForm();
+  //     onClose();
+  //   } catch (error) {
+  //     console.error('Error submitting subtopic:', error);
+  //     setError(error.message || 'Failed to add subtopic. Please try again.');
+  //   }
+  // };
+
+  const handleFormSubmit = useCallback(async (values, { resetForm }) => {
     try {
       setError('');
       
@@ -84,7 +114,6 @@ const AddSubtopicModal = ({ isOpen, onClose, onSubmit, topicId, isLoading }) => 
 
       const subtopicData = {
         title: values.title,
-        //description: values.title, // Using title as description for now
         content: values.content,
         formLinks
       };
@@ -96,12 +125,14 @@ const AddSubtopicModal = ({ isOpen, onClose, onSubmit, topicId, isLoading }) => 
       console.error('Error submitting subtopic:', error);
       setError(error.message || 'Failed to add subtopic. Please try again.');
     }
-  };
+  }, [onSubmit, onClose]);
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     setError('');
     onClose();
-  };
+  }, [onClose]);
+
+  // if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -157,12 +188,17 @@ const AddSubtopicModal = ({ isOpen, onClose, onSubmit, topicId, isLoading }) => 
                   <label className="block text-base font-semibold text-gray-900 mb-3">
                     Contents
                   </label>
+                  <div >
+
                   <RichTextEditor
                     value={values.content}
-                    onChange={(content) => setFieldValue('content', content)}
+                    
+                    onChange={useCallback((content) => setFieldValue('content', content), [setFieldValue])}
                     placeholder="Enter detailed content here..."
                     disabled={isLoading}
                   />
+                  </div>
+                
                 </div>
 
                 {/* Google Form Links Section */}

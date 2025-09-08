@@ -82,14 +82,14 @@ const SafeHTMLRenderer = ({ html, className = '' }) => {
       <style jsx>{`
         .safe-html-content {
           line-height: 1.6;
-          color: #374151;
+         
         }
         
         .safe-html-content h1 {
           font-size: 2rem;
           font-weight: 700;
           margin: 1.5rem 0 0.75rem 0;
-          color: #1F2937;
+         
           line-height: 1.25;
         }
         
@@ -97,7 +97,7 @@ const SafeHTMLRenderer = ({ html, className = '' }) => {
           font-size: 1.5rem;
           font-weight: 600;
           margin: 1.25rem 0 0.625rem 0;
-          color: #1F2937;
+         
           line-height: 1.3;
         }
         
@@ -105,7 +105,7 @@ const SafeHTMLRenderer = ({ html, className = '' }) => {
           font-size: 1.25rem;
           font-weight: 600;
           margin: 1rem 0 0.5rem 0;
-          color: #1F2937;
+         
           line-height: 1.4;
         }
         
@@ -113,21 +113,21 @@ const SafeHTMLRenderer = ({ html, className = '' }) => {
           font-size: 1.125rem;
           font-weight: 600;
           margin: 0.875rem 0 0.4375rem 0;
-          color: #1F2937;
+         
         }
         
         .safe-html-content h5 {
           font-size: 1rem;
           font-weight: 600;
           margin: 0.75rem 0 0.375rem 0;
-          color: #1F2937;
+     
         }
         
         .safe-html-content h6 {
           font-size: 0.875rem;
           font-weight: 600;
           margin: 0.625rem 0 0.3125rem 0;
-          color: #1F2937;
+         
           text-transform: uppercase;
         }
         

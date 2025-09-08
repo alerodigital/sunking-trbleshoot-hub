@@ -1,13 +1,40 @@
-// RichTextEditor.jsx
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Icon } from '@iconify/react';
 
 const RichTextEditor2 = ({ value = '', onChange, placeholder = '' }) => {
   const [activeFormats, setActiveFormats] = useState(new Set());
   const [showFormatDropdown, setShowFormatDropdown] = useState(false);
+  const [showFontDropdown, setShowFontDropdown] = useState(false);
+  const [showSizeDropdown, setShowSizeDropdown] = useState(false);
   const [currentFormat, setCurrentFormat] = useState('p');
+  const [currentFont, setCurrentFont] = useState('Times New Roman');
+  const [currentSize, setCurrentSize] = useState('14px');
   const editorRef = useRef(null);
   const formatDropdownRef = useRef(null);
+  const fontDropdownRef = useRef(null);
+  const sizeDropdownRef = useRef(null);
+
+  // Font options
+  const fontOptions = [
+    { label: 'Times New Roman', value: 'Times New Roman' },
+    { label: 'Arial', value: 'Arial, sans-serif' },
+    { label: 'Helvetica', value: 'Helvetica, sans-serif' },
+    { label: 'Georgia', value: 'Georgia, serif' },
+    { label: 'Courier New', value: 'Courier New, monospace' },
+    { label: 'Verdana', value: 'Verdana, sans-serif' },
+    { label: 'Trebuchet MS', value: 'Trebuchet MS, sans-serif' },
+    { label: 'Garamond', value: 'Garamond, serif' },
+    { label: 'Comic Sans', value: 'Comic Sans MS, cursive' },
+  ];
+
+  // Size options
+  const sizeOptions = [
+    { label: 'Small', value: '12px' },
+    { label: 'Normal', value: '14px' },
+    { label: 'Medium', value: '16px' },
+    { label: 'Large', value: '18px' },
+    { label: 'Huge', value: '24px' },
+  ];
 
   // Initialize editor content
   useEffect(() => {
@@ -17,11 +44,17 @@ const RichTextEditor2 = ({ value = '', onChange, placeholder = '' }) => {
     }
   }, [value]);
 
-  // Close dropdown when clicking outside
+  // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (formatDropdownRef.current && !formatDropdownRef.current.contains(event.target)) {
         setShowFormatDropdown(false);
+      }
+      if (fontDropdownRef.current && !fontDropdownRef.current.contains(event.target)) {
+        setShowFontDropdown(false);
+      }
+      if (sizeDropdownRef.current && !sizeDropdownRef.current.contains(event.target)) {
+        setShowSizeDropdown(false);
       }
     };
 
@@ -36,14 +69,33 @@ const RichTextEditor2 = ({ value = '', onChange, placeholder = '' }) => {
     const selection = window.getSelection();
     if (!selection.rangeCount) return;
 
-    const range = selection.getRangeAt(0);
-    const documentFragment = range.extractContents();
-
-    if (command === 'formatBlock') {
+    // For inline formatting (bold, italic, etc.), use document.execCommand for proper toggle behavior
+    if (['bold', 'italic', 'underline', 'strikeThrough'].includes(command)) {
+      document.execCommand(command, false, null);
+    } 
+    // For font family
+    else if (command === 'fontName') {
+      document.execCommand('fontName', false, value);
+    }
+    // For font size
+    else if (command === 'fontSize') {
+      document.execCommand('fontSize', false, value);
+    }
+    // For block formatting and lists, use your custom implementation
+    else if (command === 'formatBlock') {
+      const range = selection.getRangeAt(0);
+      const documentFragment = range.extractContents();
       const blockElement = document.createElement(value);
       blockElement.appendChild(documentFragment);
       range.insertNode(blockElement);
-    } else if (command === 'insertUnorderedList' || command === 'insertOrderedList') {
+      
+      // Restore selection
+      selection.removeAllRanges();
+      selection.addRange(range);
+    } 
+    else if (command === 'insertUnorderedList' || command === 'insertOrderedList') {
+      const range = selection.getRangeAt(0);
+      const documentFragment = range.extractContents();
       const listType = command === 'insertUnorderedList' ? 'ul' : 'ol';
       const listElement = document.createElement(listType);
       
@@ -69,22 +121,16 @@ const RichTextEditor2 = ({ value = '', onChange, placeholder = '' }) => {
       }
       
       range.insertNode(listElement);
-    } else {
-      // For inline formatting
-      const span = document.createElement('span');
-      if (command === 'bold') span.style.fontWeight = 'bold';
-      if (command === 'italic') span.style.fontStyle = 'italic';
-      if (command === 'underline') span.style.textDecoration = 'underline';
-      if (command === 'strikeThrough') span.style.textDecoration = 'line-through';
       
-      span.appendChild(documentFragment);
-      range.insertNode(span);
+      // Restore selection
+      selection.removeAllRanges();
+      selection.addRange(range);
+    } 
+    // For alignment
+    else if (['justifyLeft', 'justifyCenter', 'justifyRight'].includes(command)) {
+      document.execCommand(command, false, null);
     }
 
-    // Restore selection
-    selection.removeAllRanges();
-    selection.addRange(range);
-    
     editorRef.current.focus();
     updateActiveFormats();
     handleContentChange();
@@ -111,17 +157,34 @@ const RichTextEditor2 = ({ value = '', onChange, placeholder = '' }) => {
         parent = parent.parentElement;
       }
 
-      // Check text formatting
-      const hasStyle = (style, value) => {
-        const element = startContainer.nodeType === Node.TEXT_NODE ? 
-          startContainer.parentElement : startContainer;
-        return window.getComputedStyle(element)[style] === value;
-      };
+      // Check text formatting using document.queryCommandState for more reliable detection
+      if (document.queryCommandState('bold')) formats.add('bold');
+      if (document.queryCommandState('italic')) formats.add('italic');
+      if (document.queryCommandState('underline')) formats.add('underline');
+      if (document.queryCommandState('strikeThrough')) formats.add('strikethrough');
 
-      if (hasStyle('fontWeight', 'bold') || hasStyle('fontWeight', '700')) formats.add('bold');
-      if (hasStyle('fontStyle', 'italic')) formats.add('italic');
-      if (hasStyle('textDecoration', 'underline')) formats.add('underline');
-      if (hasStyle('textDecoration', 'line-through')) formats.add('strikethrough');
+      // Check font family and size
+      const element = startContainer.nodeType === Node.TEXT_NODE ? 
+        startContainer.parentElement : startContainer;
+      
+      const computedStyle = window.getComputedStyle(element);
+      const fontFamily = computedStyle.fontFamily;
+      const fontSize = computedStyle.fontSize;
+      
+      // Find matching font
+      const matchedFont = fontOptions.find(font => 
+        fontFamily.includes(font.value.replace(/'/g, '')) || 
+        fontFamily.includes(font.label)
+      );
+      if (matchedFont) {
+        setCurrentFont(matchedFont.label);
+      }
+      
+      // Find matching size
+      const matchedSize = sizeOptions.find(size => size.value === fontSize);
+      if (matchedSize) {
+        setCurrentSize(matchedSize.value);
+      }
 
       // Check block format
       const blockElement = startContainer.nodeType === Node.TEXT_NODE ? 
@@ -129,11 +192,12 @@ const RichTextEditor2 = ({ value = '', onChange, placeholder = '' }) => {
       if (blockElement.tagName === 'H1') setCurrentFormat('h1');
       else if (blockElement.tagName === 'H2') setCurrentFormat('h2');
       else if (blockElement.tagName === 'H3') setCurrentFormat('h3');
+      else if (blockElement.tagName === 'BLOCKQUOTE') setCurrentFormat('blockquote');
       else setCurrentFormat('p');
     }
 
     setActiveFormats(formats);
-  }, []);
+  }, [fontOptions, sizeOptions]);
 
   // Handle content changes
   const handleContentChange = useCallback(() => {
@@ -218,21 +282,36 @@ const RichTextEditor2 = ({ value = '', onChange, placeholder = '' }) => {
   };
 
   // Toolbar button component
-  const ToolbarButton = ({ command, icon, isActive = false, value = null, title, onClick }) => (
-    <button
-      type="button"
-      className={`w-8 h-8 flex items-center justify-center rounded transition-colors ${
-        isActive 
-          ? 'bg-blue-100 text-blue-600 shadow-sm border border-blue-200' 
-          : 'text-gray-600 hover:bg-gray-100 hover:text-gray-800 border border-transparent'
-      }`}
-      onClick={onClick || (() => formatText(command, value))}
-      title={title}
-      onMouseDown={(e) => e.preventDefault()}
-    >
-      <Icon icon={icon} className="w-4 h-4" />
-    </button>
-  );
+  const ToolbarButton = ({ command, icon, isActive = false, value = null, title, onClick }) => {
+    const handleClick = () => {
+      if (onClick) {
+        onClick();
+      } else if (['bold', 'italic', 'underline', 'strikeThrough'].includes(command)) {
+        // For toggle commands, use execCommand
+        document.execCommand(command, false, null);
+        updateActiveFormats();
+        handleContentChange();
+      } else {
+        formatText(command, value);
+      }
+    };
+
+    return (
+      <button
+        type="button"
+        className={`w-8 h-8 flex items-center justify-center rounded transition-colors ${
+          isActive 
+            ? 'bg-blue-100 text-blue-600 shadow-sm border border-blue-200' 
+            : 'text-gray-600 hover:bg-gray-100 hover:text-gray-800 border border-transparent'
+        }`}
+        onClick={handleClick}
+        title={title}
+        onMouseDown={(e) => e.preventDefault()}
+      >
+        <Icon icon={icon} className="w-4 h-4" />
+      </button>
+    );
+  };
 
   // Format dropdown component
   const FormatDropdown = () => (
@@ -273,10 +352,106 @@ const RichTextEditor2 = ({ value = '', onChange, placeholder = '' }) => {
     </div>
   );
 
+  // Font dropdown component
+  const FontDropdown = () => (
+    <div className="relative" ref={fontDropdownRef}>
+      <button
+        type="button"
+        className="flex items-center gap-1 px-3 py-1 text-sm text-gray-700 hover:bg-gray-100 rounded transition-colors border border-gray-300"
+        onClick={() => setShowFontDropdown(!showFontDropdown)}
+        onMouseDown={(e) => e.preventDefault()}
+      >
+        <span style={{ fontFamily: currentFont }}>{currentFont}</span>
+        <Icon icon="mdi:chevron-down" className="w-4 h-4" />
+      </button>
+      
+      {showFontDropdown && (
+        <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-md shadow-lg z-20 min-w-[160px] max-h-60 overflow-y-auto">
+          {fontOptions.map((font, index) => (
+            <button
+              key={index}
+              type="button"
+              className={`w-full text-left px-3 py-2 text-sm hover:bg-gray-100 first:rounded-t-md last:rounded-b-md ${
+                currentFont === font.label 
+                  ? 'bg-blue-50 text-blue-600' 
+                  : 'text-gray-700'
+              }`}
+              style={{ fontFamily: font.value }}
+              onClick={() => {
+                formatText('fontName', font.value);
+                setCurrentFont(font.label);
+                setShowFontDropdown(false);
+              }}
+              onMouseDown={(e) => e.preventDefault()}
+            >
+              {font.label}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+
+  // Size dropdown component
+  const SizeDropdown = () => (
+    <div className="relative" ref={sizeDropdownRef}>
+      <button
+        type="button"
+        className="flex items-center gap-1 px-3 py-1 text-sm text-gray-700 hover:bg-gray-100 rounded transition-colors border border-gray-300"
+        onClick={() => setShowSizeDropdown(!showSizeDropdown)}
+        onMouseDown={(e) => e.preventDefault()}
+      >
+        {sizeOptions.find(size => size.value === currentSize)?.label || 'Normal'}
+        <Icon icon="mdi:chevron-down" className="w-4 h-4" />
+      </button>
+      
+      {showSizeDropdown && (
+        <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-md shadow-lg z-20 min-w-[100px]">
+          {sizeOptions.map((size, index) => (
+            <button
+              key={index}
+              type="button"
+              className={`w-full text-left px-3 py-2 text-sm hover:bg-gray-100 first:rounded-t-md last:rounded-b-md ${
+                currentSize === size.value 
+                  ? 'bg-blue-50 text-blue-600' 
+                  : 'text-gray-700'
+              }`}
+              style={{ fontSize: size.value }}
+              onClick={() => {
+                // Convert size to the format expected by execCommand (1-7)
+                const sizeMap = {
+                  '12px': '1',
+                  '14px': '2',
+                  '16px': '3',
+                  '18px': '4',
+                  '24px': '5'
+                };
+                formatText('fontSize', sizeMap[size.value] || '3');
+                setCurrentSize(size.value);
+                setShowSizeDropdown(false);
+              }}
+              onMouseDown={(e) => e.preventDefault()}
+            >
+              {size.label}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+
   return (
     <div className="rich-text-editor border border-gray-300 rounded-md overflow-hidden bg-white">
       {/* Toolbar */}
-      <div className="border-b border-gray-200 p-2 bg-gray-50 flex items-center gap-2 flex-wrap">
+      <div className="border-b border-gray-200 p-2 bg-gray-50 flex items-center gap-2 flex-wrap min-h-[100px]">
+        {/* Font Dropdown */}
+        <FontDropdown />
+        
+        {/* Size Dropdown */}
+        <SizeDropdown />
+        
+        <div className="w-px h-6 bg-gray-300 mx-1"></div>
+        
         {/* Format Dropdown */}
         <FormatDropdown />
         
@@ -349,6 +524,7 @@ const RichTextEditor2 = ({ value = '', onChange, placeholder = '' }) => {
         ref={editorRef}
         contentEditable
         className="p-4 min-h-[300px] outline-none text-gray-900 text-base leading-relaxed focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+        style={{ fontFamily: 'Times New Roman', fontSize: '14px' }}
         onInput={handleInput}
         onKeyDown={handleKeyDown}
         onMouseUp={updateActiveFormats}
@@ -365,11 +541,15 @@ const RichTextEditor2 = ({ value = '', onChange, placeholder = '' }) => {
           color: #9CA3AF;
           pointer-events: none;
           position: absolute;
+          font-family: 'Times New Roman';
+          font-size: 14px;
         }
         
         .rich-text-editor [contentEditable] {
           position: relative;
           min-height: 300px;
+          font-family: 'Times New Roman';
+          font-size: 14px;
         }
         
         .rich-text-editor h1 {
@@ -377,6 +557,7 @@ const RichTextEditor2 = ({ value = '', onChange, placeholder = '' }) => {
           font-weight: 700;
           margin: 1rem 0 0.5rem 0;
           color: #1F2937;
+          font-family: 'Times New Roman';
         }
         
         .rich-text-editor h2 {
@@ -384,6 +565,7 @@ const RichTextEditor2 = ({ value = '', onChange, placeholder = '' }) => {
           font-weight: 600;
           margin: 0.875rem 0 0.5rem 0;
           color: #1F2937;
+          font-family: 'Times New Roman';
         }
         
         .rich-text-editor h3 {
@@ -391,17 +573,21 @@ const RichTextEditor2 = ({ value = '', onChange, placeholder = '' }) => {
           font-weight: 600;
           margin: 0.75rem 0 0.5rem 0;
           color: #1F2937;
+          font-family: 'Times New Roman';
         }
         
         .rich-text-editor p {
           margin: 0.75rem 0;
           line-height: 1.6;
           color: #374151;
+          font-family: 'Times New Roman';
+          font-size: 14px;
         }
         
         .rich-text-editor ul, .rich-text-editor ol {
           margin: 0.75rem 0;
           padding-left: 1.5rem;
+          font-family: 'Times New Roman';
         }
         
         .rich-text-editor ul {
@@ -416,6 +602,7 @@ const RichTextEditor2 = ({ value = '', onChange, placeholder = '' }) => {
           margin: 0.5rem 0;
           line-height: 1.5;
           color: #374151;
+          font-family: 'Times New Roman';
         }
         
         .rich-text-editor blockquote {
@@ -427,6 +614,7 @@ const RichTextEditor2 = ({ value = '', onChange, placeholder = '' }) => {
           background: #F9FAFB;
           padding: 1rem;
           border-radius: 0 0.375rem 0.375rem 0;
+          font-family: 'Times New Roman';
         }
         
         .rich-text-editor strong {
