@@ -101,7 +101,7 @@ const Login = () => {
                   id="email"
                   name="email"
                   type="email"
-                  placeholder="Stepha"
+                  placeholder="j******k@company.com"
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent text-gray-900"
                 />
                 <ErrorMessage name="email" component="div" className="mt-1 text-sm text-red-600" />
