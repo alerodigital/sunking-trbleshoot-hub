@@ -7,18 +7,24 @@ import {
   flexRender,
   createColumnHelper,
 } from '@tanstack/react-table';
-import { topicsTableData } from '../../data/topicsTableData.js';
 import AddTopicModal from '../../components/admin/AddTopicModal.jsx';
+import DeleteConfirmationModal from '../../components/admin/DeleteConfirmationModal.jsx';
+import { useTopics } from '../../hooks/useTopics'; // Import the topics hook
 
 const columnHelper = createColumnHelper();
 
 const TopicsPage = () => {
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [topicToDelete, setTopicToDelete] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
   const navigate = useNavigate();
+  const { useTopicsQuery, addTopic, deleteTopic, isLoading } = useTopics();
+  const { data: topics = [], error, refetch } = useTopicsQuery();
 
   const columns = useMemo(
     () => [
-      columnHelper.accessor('title', {
+      columnHelper.accessor('topic', {
         header: 'Title',
         cell: info => (
           <span className="text-base font-medium text-black">
@@ -38,12 +44,23 @@ const TopicsPage = () => {
         id: 'action',
         header: 'Action',
         cell: ({ row }) => (
-          <button 
-            onClick={() => navigate(`/admin/topics/${row.original.id}`)}
-            className="bg-white border border-black rounded-full px-6 py-2 text-sm font-medium text-black hover:bg-gray-50 transition-colors cursor-pointer"
-          >
-            Open
-          </button>
+          <div className="flex space-x-2">
+            <button
+              onClick={() => navigate(`/admin/topics/${row.original.id}`)}
+              className="bg-white border border-black rounded-full px-6 py-2 text-sm font-medium text-black hover:bg-gray-50 transition-colors cursor-pointer"
+            >
+              Open
+            </button>
+
+            <button
+              onClick={() => handleDeleteClick(row.original)}
+              className="bg-white border border-red-600 text-red-600 rounded-full px-4 py-1 text-sm font-medium hover:bg-red-50 transition-colors cursor-pointer"
+              title="Delete topic"
+            >
+              <Icon icon="mdi:delete" className="w-4 h-4" />
+            </button>
+          </div>
+
         ),
       }),
     ],
@@ -51,15 +68,64 @@ const TopicsPage = () => {
   );
 
   const table = useReactTable({
-    data: topicsTableData,
+    data: topics,
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
 
-  const handleAddTopic = () => {
-    // Handle topic submission logic here
-    console.log('Topic added');
+  const handleAddTopic = async (topicData) => {
+    try {
+      await addTopic(topicData);
+      setShowAddModal(false);
+    } catch (error) {
+      console.error('Error adding topic:', error);
+      // You can add error handling UI here
+    }
   };
+
+  const handleDeleteClick = (topic) => {
+    setTopicToDelete(topic);
+    setShowDeleteModal(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!topicToDelete) return;
+    
+    setIsDeleting(true);
+    try {
+      await deleteTopic(topicToDelete.id);
+      setShowDeleteModal(false);
+      setTopicToDelete(null);
+    } catch (error) {
+      console.error('Error deleting topic:', error);
+      // You can add error handling UI here
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const handleCancelDelete = () => {
+    setShowDeleteModal(false);
+    setTopicToDelete(null);
+  };
+
+
+
+  if (error) {
+    return (
+      <div className="p-4 sm:p-6 lg:p-8">
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+          <p>Error loading topics: {error.message}</p>
+          <button
+            onClick={() => refetch()}
+            className="mt-2 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-4 sm:p-6 lg:p-8">
@@ -67,6 +133,7 @@ const TopicsPage = () => {
         <h1 className="text-2xl sm:text-3xl font-bold text-black">Topics Management</h1>
         <button
           onClick={() => setShowAddModal(true)}
+          disabled={isLoading}
           className="bg-yellow-400 text-black px-4 sm:px-6 py-2 sm:py-3 rounded-full font-semibold hover:bg-yellow-500 transition-colors flex items-center space-x-2 cursor-pointer text-sm sm:text-base"
         >
           <Icon icon="mdi:plus" className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -89,9 +156,9 @@ const TopicsPage = () => {
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
                     </th>
                   ))}
                 </tr>
@@ -110,6 +177,21 @@ const TopicsPage = () => {
             </tbody>
           </table>
         </div>
+
+        {topics.length === 0 && !isLoading && (
+          <div className="text-center py-12">
+            <Icon icon="mdi:folder-open-outline" className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+            <p className="text-gray-500 text-lg">No topics yet</p>
+            <p className="text-gray-400 mt-1">Create your first topic to get started</p>
+          </div>
+        )}
+
+        {isLoading && (
+          <div className="text-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-400 mx-auto"></div>
+            <p className="text-gray-500 mt-4">Loading topics...</p>
+          </div>
+        )}
       </div>
 
       {showAddModal && (
@@ -117,6 +199,18 @@ const TopicsPage = () => {
           isOpen={showAddModal}
           onClose={() => setShowAddModal(false)}
           onSubmit={handleAddTopic}
+          isLoading={isLoading}
+        />
+      )}
+
+{showDeleteModal && (
+        <DeleteConfirmationModal
+          isOpen={showDeleteModal}
+          onClose={handleCancelDelete}
+          onConfirm={handleConfirmDelete}
+          isDeleting={isDeleting}
+          itemName={topicToDelete?.topic}
+          message="This will also delete all subtopics associated with this topic. This action cannot be undone."
         />
       )}
     </div>

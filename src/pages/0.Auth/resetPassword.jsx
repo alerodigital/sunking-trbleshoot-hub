@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
+import { useAuth } from '../../hooks/useAuth'; // Import the auth hook
 
 const resetPasswordSchema = Yup.object().shape({
   email: Yup.string().email('Invalid email').required('Email is required'),
@@ -12,15 +13,33 @@ const ResetPassword = () => {
   const initialValues = {
     email: '',
   };
+  const { resetPassword, isLoading } = useAuth(); // Use the auth hook
 
-  const handleSubmit = (values, { setSubmitting }) => {
-    // Handle reset password logic here
-    console.log('Reset password for:', values.email);
-    // Simulate API call
-    setTimeout(() => {
-      alert('Password reset instructions have been sent to your email.');
+  const handleSubmit = async (values, { setSubmitting, setStatus }) => {
+    try {
+      // Use the resetPassword function from our hook
+      await resetPassword(values);
+      setStatus({ success: 'Password reset instructions have been sent to your email.' });
+    } catch (error) {
+      console.error('Reset password error:', error);
+      
+      // Handle specific Firebase auth errors
+      switch (error.code) {
+        case 'auth/invalid-email':
+          setStatus({ error: 'Invalid email address format.' });
+          break;
+        case 'auth/user-not-found':
+          setStatus({ error: 'No account found with this email address.' });
+          break;
+        case 'auth/too-many-requests':
+          setStatus({ error: 'Too many attempts. Please try again later.' });
+          break;
+        default:
+          setStatus({ error: 'Failed to send reset email. Please try again.' });
+      }
+    } finally {
       setSubmitting(false);
-    }, 1000);
+    }
   };
 
   return (
@@ -48,8 +67,22 @@ const ResetPassword = () => {
           validationSchema={resetPasswordSchema}
           onSubmit={handleSubmit}
         >
-          {({ isSubmitting }) => (
+          {({ isSubmitting, status }) => (
             <Form className="space-y-6">
+
+              {/* Success/Error Messages */}
+              {status?.success && (
+                <div className="p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg">
+                  {status.success}
+                </div>
+              )}
+              
+              {status?.error && (
+                <div className="p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+                  {status.error}
+                </div>
+              )}
+
               {/* Email Input */}
               <div>
                 <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
@@ -69,10 +102,10 @@ const ResetPassword = () => {
                 {/* Reset Password Button */}
                 <button
                   type="submit"
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || isLoading}
                   className="flex-1 bg-yellow-400 hover:bg-yellow-500 text-black font-semibold py-3 px-4 cursor-pointer rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-2"
                 >
-                  {isSubmitting ? 'Sending...' : 'Reset password'}
+                  {isSubmitting || isLoading ? 'Sending...' : 'Reset password'}
                 </button>
                 
                 {/* Return to Login Button */}

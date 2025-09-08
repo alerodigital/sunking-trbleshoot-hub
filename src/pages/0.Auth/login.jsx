@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
+import { useAuth } from '../../hooks/useAuth'; // Import the hook
 
 const loginSchema = Yup.object().shape({
   email: Yup.string().email('Invalid email').required('Email is required'),
@@ -12,22 +13,53 @@ const loginSchema = Yup.object().shape({
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
-  
+  const { signIn, isLoading, useCurrentUser } = useAuth(); // Get the signIn function and loading state from the hook
+  const { data: user } = useCurrentUser();
+
   const initialValues = {
     email: '',
     password: '',
   };
 
-  const handleSubmit = (values, { setSubmitting }) => {
-    // Simulate login logic
-    console.log('Login attempt:', values);
-    
-    // Simulate API call
-    setTimeout(() => {
-      // On successful login, navigate to admin page
+   // Redirect if already logged in
+   useEffect(() => {
+    if (user) {
       navigate('/admin');
+    }
+  }, [user, navigate]);
+
+  const handleSubmit = async (values, { setSubmitting, setErrors }) => {
+    try {
+      // Use the signIn function from our hook
+      await signIn(values);
+
+      // On successful login, navigate to admin page
+      // navigate('/admin');
+      // setSubmitting(false);
+    } catch (error) {
+      console.error('Login error:', error);
+
+      // Handle specific Firebase auth errors
+      switch (error.code) {
+        case 'auth/invalid-email':
+          setErrors({ email: 'Invalid email address' });
+          break;
+        case 'auth/user-disabled':
+          setErrors({ email: 'This account has been disabled' });
+          break;
+        case 'auth/user-not-found':
+          setErrors({ email: 'No account found with this email' });
+          break;
+        case 'auth/wrong-password':
+          setErrors({ password: 'Incorrect password' });
+          break;
+        default:
+          setErrors({ email: 'Failed to login. Please try again.' });
+      }
+
+    } finally {
       setSubmitting(false);
-    }, 1000);
+    }
   };
 
   return (
@@ -45,15 +77,21 @@ const Login = () => {
             <img src="/logo.png" alt="Sun King" className="h-12 w-full mr-3" />
           </div>
         </div>
-        
+
         {/* Formik Form */}
         <Formik
           initialValues={initialValues}
           validationSchema={loginSchema}
           onSubmit={handleSubmit}
         >
-          {({ isSubmitting }) => (
+          {({ isSubmitting, errors }) => (
             <Form className="space-y-6">
+              {/* Display general error */}
+              {errors.general && (
+                <div className="p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+                  {errors.general}
+                </div>
+              )}
               {/* Email Input */}
               <div>
                 <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
@@ -105,22 +143,35 @@ const Login = () => {
 
               {/* Forgotten Password Link */}
               <div className="text-right">
-                <Link 
-                  to="/reset-password" 
+                <Link
+                  to="/reset-password"
                   className="text-sm text-gray-600 hover:text-gray-800 transition-colors"
                 >
                   Forgotten password?
                 </Link>
               </div>
 
+                      {/** register */}
+              <div className="text-center pt-4">
+                <p className="text-sm text-gray-600">
+                  Don't have an account?{' '}
+                  <Link
+                    to="/register"
+                    className="font-medium text-yellow-600 hover:text-yellow-500 transition-colors"
+                  >
+                    Create account
+                  </Link>
+                </p>
+              </div>
+
               {/* Submit Button */}
               <div>
                 <button
                   type="submit"
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || isLoading}
                   className="w-full bg-yellow-400 hover:bg-yellow-500 text-black font-semibold py-3 px-4 cursor-pointer rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-2"
                 >
-                  {isSubmitting ? 'Logging in...' : 'Login'}
+                  {isSubmitting || isLoading ? 'Logging in...' : 'Login'}
                 </button>
               </div>
             </Form>

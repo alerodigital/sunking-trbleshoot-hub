@@ -1,24 +1,35 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Icon } from '@iconify/react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 
 const validationSchema = Yup.object({
-  topicName: Yup.string().required('Topic name is required')
+  topic: Yup.string().required('Topic name is required').min(2, 'Topic name must be at least 2 characters'),
 });
 
-const AddTopicModal = ({ isOpen, onClose, onSubmit }) => {
+const AddTopicModal = ({ isOpen, onClose, onSubmit, isLoading }) => {
   if (!isOpen) return null;
 
+  const [error, setError] = useState('');
+
   const initialValues = {
-    topicName: ''
+    topic: ''
   };
 
-  const handleFormSubmit = (values, { resetForm }) => {
-    if (onSubmit) {
-      onSubmit(values);
+  const handleFormSubmit = async (values, { resetForm }) => {
+    try {
+      setError('');
+      await onSubmit(values);
+      resetForm();
+      onClose();
+    } catch (error) {
+      console.error('Error submitting topic:', error);
+      setError(error.message || 'Failed to add topic. Please try again.');
     }
-    resetForm();
+  };
+
+  const handleClose = () => {
+    setError('');
     onClose();
   };
 
@@ -28,48 +39,70 @@ const AddTopicModal = ({ isOpen, onClose, onSubmit }) => {
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-semibold text-black">Add New Topic</h2>
           <button
-            onClick={onClose}
+            onClick={handleClose}
             className="text-black hover:text-gray-600 cursor-pointer"
+            disabled={isLoading}
           >
             <Icon icon="mdi:close" className="w-6 h-6" />
           </button>
         </div>
+
+        {error && (
+          <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+            {error}
+          </div>
+        )}
         
         <Formik
           initialValues={initialValues}
           validationSchema={validationSchema}
           onSubmit={handleFormSubmit}
         >
-          <Form className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-black mb-2">
-                Topic Name
-              </label>
-              <Field
-                name="topicName"
-                type="text"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent cursor-text"
-                placeholder="Enter topic name"
-              />
-              <ErrorMessage name="topicName" component="div" className="text-red-500 text-sm mt-1" />
-            </div>
-            
-            <div className="flex justify-end space-x-3 pt-4">
-              <button
-                type="button"
-                onClick={onClose}
-                className="px-4 py-2 text-sm font-medium text-black bg-white border border-black rounded-lg hover:bg-gray-50 cursor-pointer transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="px-4 py-2 text-sm font-medium text-black bg-yellow-400 rounded-lg hover:bg-yellow-500 cursor-pointer transition-colors"
-              >
-                Add Topic
-              </button>
-            </div>
-          </Form>
+          {
+            ({isSubmitting}) => (
+              <Form className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-black mb-2">
+                  Topic Name *
+                </label> 
+                <Field
+                  name="topic"
+                  type="text"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent cursor-text"
+                  placeholder="Enter topic name"
+                  disabled={isLoading}
+                />
+                <ErrorMessage name="topic" component="div" className="text-red-500 text-sm mt-1" />
+              </div>
+              
+              <div className="flex justify-end space-x-3 pt-4">
+                <button
+                  type="button"
+                  onClick={handleClose}
+                  disabled={isLoading}
+                  className="px-4 py-2 text-sm font-medium text-black bg-white border border-black rounded-lg hover:bg-gray-50 cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isLoading || isSubmitting}
+                  className="px-4 py-2 text-sm font-medium text-black bg-yellow-400 rounded-lg hover:bg-yellow-500 cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isLoading || isSubmitting ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-black mr-2"></div>
+                      Adding...
+                    </>
+                  ) : (
+                    'Add Topic'
+                  )}
+                </button>
+              </div>
+            </Form>
+            )
+          }
+        
         </Formik>
       </div>
     </div>

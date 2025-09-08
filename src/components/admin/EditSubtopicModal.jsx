@@ -1,12 +1,14 @@
-// AddSubtopicModal.jsx
-import React, { useState } from 'react';
+// components/admin/EditSubtopicModal.jsx
+import React, { useState, useEffect } from 'react';
 import { Icon } from '@iconify/react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import RichTextEditor from './RichTextEditor2';
 
 const validationSchema = Yup.object({
-  title: Yup.string().required('Title is required').min(2, 'Title must be at least 2 characters'),
+  title: Yup.string()
+    .required('Title is required')
+    .min(2, 'Title must be at least 2 characters'),
   content: Yup.string(),
   formLinksEnabled: Yup.boolean(),
   formLink1Name: Yup.string().when('formLinksEnabled', {
@@ -27,46 +29,24 @@ const validationSchema = Yup.object({
   })
 });
 
-const AddSubtopicModal = ({ isOpen, onClose, onSubmit, topicId, isLoading }) => {
-  if (!isOpen) return null;
-
+const EditSubtopicModal = ({ isOpen, onClose, subtopic, onSave, isLoading }) => {
   const [error, setError] = useState('');
 
-  const initialValues = {
-    title: '',
-    content: '',
-    formLinksEnabled: true,
-    formLink1Name: '',
-    formLink1Url: '',
-    formLink2Name: '',
-    formLink2Url: ''
+  if (!isOpen || !subtopic) return null;
+
+  // Prepare initial values from the subtopic
+  const getInitialValues = () => {
+    const formLinks = subtopic.formLinks || [];
+    return {
+      title: subtopic.title || '',
+      content: subtopic.content || '',
+      formLinksEnabled: formLinks.length > 0,
+      formLink1Name: formLinks[0]?.name || '',
+      formLink1Url: formLinks[0]?.url || '',
+      formLink2Name: formLinks[1]?.name || '',
+      formLink2Url: formLinks[1]?.url || ''
+    };
   };
-
-  // const handleFormSubmit = (values, { resetForm }) => {
-  //   const formLinks = [];
-  //   if (values.formLinksEnabled) {
-  //     if (values.formLink1Name && values.formLink1Url) {
-  //       formLinks.push({ name: values.formLink1Name, url: values.formLink1Url });
-  //     }
-  //     if (values.formLink2Name && values.formLink2Url) {
-  //       formLinks.push({ name: values.formLink2Name, url: values.formLink2Url });
-  //     }
-  //   }
-
-  //   const subtopicData = {
-  //     title: values.title,
-  //     description: values.title,
-  //     content: values.content,
-  //     formLinks
-  //   };
-
-  //   if (onSubmit) {
-  //     onSubmit(subtopicData);
-  //   }
-    
-  //   resetForm();
-  //   onClose();
-  // };
 
   const handleFormSubmit = async (values, { resetForm }) => {
     try {
@@ -75,26 +55,32 @@ const AddSubtopicModal = ({ isOpen, onClose, onSubmit, topicId, isLoading }) => 
       const formLinks = [];
       if (values.formLinksEnabled) {
         if (values.formLink1Name && values.formLink1Url) {
-          formLinks.push({ name: values.formLink1Name, url: values.formLink1Url });
+          formLinks.push({ 
+            name: values.formLink1Name, 
+            url: values.formLink1Url 
+          });
         }
         if (values.formLink2Name && values.formLink2Url) {
-          formLinks.push({ name: values.formLink2Name, url: values.formLink2Url });
+          formLinks.push({ 
+            name: values.formLink2Name, 
+            url: values.formLink2Url 
+          });
         }
       }
 
       const subtopicData = {
         title: values.title,
-        //description: values.title, // Using title as description for now
+        description: values.title,
         content: values.content,
         formLinks
       };
 
-      await onSubmit(subtopicData);
+      await onSave(subtopic.id, subtopicData);
       resetForm();
       onClose();
     } catch (error) {
-      console.error('Error submitting subtopic:', error);
-      setError(error.message || 'Failed to add subtopic. Please try again.');
+      console.error('Error updating subtopic:', error);
+      setError(error.message || 'Failed to update subtopic. Please try again.');
     }
   };
 
@@ -105,38 +91,39 @@ const AddSubtopicModal = ({ isOpen, onClose, onSubmit, topicId, isLoading }) => 
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg w-full max-w-4xl sm:max-w-2xl md:max-w-3xl lg:max-w-4xl max-h-[95vh] overflow-y-auto shadow-2xl">
+      <div className="bg-white rounded-lg w-full max-w-4xl max-h-[95vh] overflow-y-auto shadow-2xl">
         {/* Yellow Header Bar */}
         <div className="bg-yellow-400 h-2 rounded-t-lg"></div>
         
         {/* Modal Header with Close Button */}
-        <div className="flex justify-between items-center p-4 sm:p-6 lg:p-8 pb-2 sm:pb-3 lg:pb-4">
-          <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-black">Add Subtopic</h2>
+        <div className="flex justify-between items-center p-6 pb-4">
+          <h2 className="text-2xl font-bold text-black">Edit Subtopic</h2>
           <button
-             onClick={handleClose}
-             disabled={isLoading}
-            className="p-2 hover:bg-gray-100 rounded-full transition-colors cursor-pointer"
+            onClick={handleClose}
+            disabled={isLoading}
+            className="p-2 hover:bg-gray-100 rounded-full transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             type="button"
           >
-            <Icon icon="mdi:close" className="w-5 h-5 sm:w-6 sm:h-6 text-black" />
+            <Icon icon="mdi:close" className="w-6 h-6 text-black" />
           </button>
         </div>
         
         {/* Modal Content */}
-        <div className="px-4 sm:px-6 lg:px-8 pb-4 sm:pb-6 lg:pb-8">
-        {error && (
+        <div className="px-6 pb-6">
+          {error && (
             <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
               {error}
             </div>
           )}
 
           <Formik
-            initialValues={initialValues}
+            initialValues={getInitialValues()}
             validationSchema={validationSchema}
             onSubmit={handleFormSubmit}
+            enableReinitialize
           >
             {({ values, setFieldValue, isSubmitting }) => (
-              <Form className="space-y-8">
+              <Form className="space-y-6">
                 {/* Title Field */}
                 <div>
                   <label className="block text-base font-semibold text-black mb-3">
@@ -145,7 +132,7 @@ const AddSubtopicModal = ({ isOpen, onClose, onSubmit, topicId, isLoading }) => 
                   <Field
                     name="title"
                     type="text"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent text-black text-base"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent text-black text-base disabled:bg-gray-100 disabled:cursor-not-allowed"
                     placeholder="Enter the question or statement"
                     disabled={isLoading}
                   />
@@ -178,7 +165,7 @@ const AddSubtopicModal = ({ isOpen, onClose, onSubmit, topicId, isLoading }) => 
                           className="sr-only peer"
                           disabled={isLoading}
                         />
-                        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-yellow-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-yellow-400"></div>
+                        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-yellow-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-yellow-400 disabled:opacity-50 disabled:cursor-not-allowed"></div>
                       </label>
                       <span className="text-sm font-semibold text-black">On</span>
                     </div>
@@ -249,24 +236,24 @@ const AddSubtopicModal = ({ isOpen, onClose, onSubmit, topicId, isLoading }) => 
                     type="button"
                     onClick={handleClose}
                     disabled={isLoading}
-                    className="px-6 py-2.5 text-sm font-medium text-black bg-white border border-black rounded-md hover:bg-gray-50 transition-colors cursor-pointer"
+                    className="px-6 py-2.5 text-sm font-medium text-black bg-white border border-black rounded-md hover:bg-gray-50 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={isLoading || isSubmitting}
-                    className="px-6 py-2.5 text-sm font-semibold text-black bg-yellow-400 rounded-full hover:bg-yellow-500 flex items-center space-x-2 transition-colors cursor-pointer"
+                    className="px-6 py-2.5 text-sm font-semibold text-black bg-yellow-400 rounded-full hover:bg-yellow-500 flex items-center space-x-2 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {isLoading || isSubmitting ? (
                       <>
                         <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-black mr-2"></div>
-                        Adding...
+                        Updating...
                       </>
                     ) : (
                       <>
-                        <Icon icon="mdi:plus" className="w-4 h-4" />
-                        <span>Add New Subtopic</span>
+                        <Icon icon="mdi:content-save" className="w-4 h-4" />
+                        <span>Update Subtopic</span>
                       </>
                     )}
                   </button>
@@ -280,4 +267,4 @@ const AddSubtopicModal = ({ isOpen, onClose, onSubmit, topicId, isLoading }) => 
   );
 };
 
-export default AddSubtopicModal;
+export default EditSubtopicModal;

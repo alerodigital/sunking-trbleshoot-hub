@@ -11,11 +11,11 @@ const Sidebar = ({ isOpen, onClose }) => {
       path: '/admin/topics',
       icon: 'mdi:format-list-bulleted'
     },
-    {
-      name: 'Settings',
-      path: '/admin/settings',
-      icon: 'mdi:cog'
-    }
+    // {
+    //   name: 'Settings',
+    //   path: '/admin/settings',
+    //   icon: 'mdi:cog'
+    // }
   ];
 
   const handleLinkClick = () => {
