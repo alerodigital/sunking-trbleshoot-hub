@@ -24,12 +24,34 @@ const validationSchema = Yup.object({
     is: (formLinksEnabled, formLink2Name) => formLinksEnabled && formLink2Name,
     then: (schema) => schema.url('Must be a valid URL'),
     otherwise: (schema) => schema
+  }),
+  formLink3Name: Yup.string(),
+  formLink3Url: Yup.string().when(['formLinksEnabled', 'formLink3Name'], {
+    is: (formLinksEnabled, formLink3Name) => formLinksEnabled && formLink3Name,
+    then: (schema) => schema.url('Must be a valid URL'),
+    otherwise: (schema) => schema
+  }),
+  formLink4Name: Yup.string(),
+  formLink4Url: Yup.string().when(['formLinksEnabled', 'formLink4Name'], {
+    is: (formLinksEnabled, formLink4Name) => formLinksEnabled && formLink4Name,
+    then: (schema) => schema.url('Must be a valid URL'),
+    otherwise: (schema) => schema
+  }),
+  formLink5Name: Yup.string(),
+  formLink5Url: Yup.string().when(['formLinksEnabled', 'formLink5Name'], {
+    is: (formLinksEnabled, formLink5Name) => formLinksEnabled && formLink5Name,
+    then: (schema) => schema.url('Must be a valid URL'),
+    otherwise: (schema) => schema
+  }),
+  formLink6Name: Yup.string(),
+  formLink6Url: Yup.string().when(['formLinksEnabled', 'formLink6Name'], {
+    is: (formLinksEnabled, formLink6Name) => formLinksEnabled && formLink6Name,
+    then: (schema) => schema.url('Must be a valid URL'),
+    otherwise: (schema) => schema
   })
 });
 
 const AddSubtopicModal = ({ isOpen, onClose, onSubmit, topicId, isLoading }) => {
-  
-
   const [error, setError] = useState('');
 
   const initialValues = {
@@ -39,76 +61,30 @@ const AddSubtopicModal = ({ isOpen, onClose, onSubmit, topicId, isLoading }) => 
     formLink1Name: '',
     formLink1Url: '',
     formLink2Name: '',
-    formLink2Url: ''
+    formLink2Url: '',
+    formLink3Name: '',
+    formLink3Url: '',
+    formLink4Name: '',
+    formLink4Url: '',
+    formLink5Name: '',
+    formLink5Url: '',
+    formLink6Name: '',
+    formLink6Url: ''
   };
-
-  // const handleFormSubmit = (values, { resetForm }) => {
-  //   const formLinks = [];
-  //   if (values.formLinksEnabled) {
-  //     if (values.formLink1Name && values.formLink1Url) {
-  //       formLinks.push({ name: values.formLink1Name, url: values.formLink1Url });
-  //     }
-  //     if (values.formLink2Name && values.formLink2Url) {
-  //       formLinks.push({ name: values.formLink2Name, url: values.formLink2Url });
-  //     }
-  //   }
-
-  //   const subtopicData = {
-  //     title: values.title,
-  //     description: values.title,
-  //     content: values.content,
-  //     formLinks
-  //   };
-
-  //   if (onSubmit) {
-  //     onSubmit(subtopicData);
-  //   }
-    
-  //   resetForm();
-  //   onClose();
-  // };
-
-  // const handleFormSubmit = async (values, { resetForm }) => {
-  //   try {
-  //     setError('');
-      
-  //     const formLinks = [];
-  //     if (values.formLinksEnabled) {
-  //       if (values.formLink1Name && values.formLink1Url) {
-  //         formLinks.push({ name: values.formLink1Name, url: values.formLink1Url });
-  //       }
-  //       if (values.formLink2Name && values.formLink2Url) {
-  //         formLinks.push({ name: values.formLink2Name, url: values.formLink2Url });
-  //       }
-  //     }
-
-  //     const subtopicData = {
-  //       title: values.title,
-  //       //description: values.title, // Using title as description for now
-  //       content: values.content,
-  //       formLinks
-  //     };
-
-  //     await onSubmit(subtopicData);
-  //     resetForm();
-  //     onClose();
-  //   } catch (error) {
-  //     console.error('Error submitting subtopic:', error);
-  //     setError(error.message || 'Failed to add subtopic. Please try again.');
-  //   }
-  // };
 
   const handleFormSubmit = useCallback(async (values, { resetForm }) => {
     try {
       setError('');
-      
+
       const formLinks = [];
       if (values.formLinksEnabled) {
-        if (values.formLink1Name && values.formLink1Url) {
-          formLinks.push({ name: values.formLink1Name, url: values.formLink1Url });
-        }
-        if (values.formLink2Name && values.formLink2Url) {
-          formLinks.push({ name: values.formLink2Name, url: values.formLink2Url });
+        // Add all form links that have both name and URL
+        for (let i = 1; i <= 6; i++) {
+          const name = values[`formLink${i}Name`];
+          const url = values[`formLink${i}Url`];
+          if (name && url) {
+            formLinks.push({ name, url });
+          }
         }
       }
 
@@ -132,30 +108,28 @@ const AddSubtopicModal = ({ isOpen, onClose, onSubmit, topicId, isLoading }) => 
     onClose();
   }, [onClose]);
 
-  // if (!isOpen) return null;
-
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-lg w-full max-w-4xl sm:max-w-2xl md:max-w-3xl lg:max-w-4xl max-h-[95vh] overflow-y-auto shadow-2xl">
         {/* Yellow Header Bar */}
         <div className="bg-yellow-400 h-2 rounded-t-lg"></div>
-        
+
         {/* Modal Header with Close Button */}
         <div className="flex justify-between items-center p-4 sm:p-6 lg:p-8 pb-2 sm:pb-3 lg:pb-4">
           <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-black">Add Subtopic</h2>
           <button
-             onClick={handleClose}
-             disabled={isLoading}
+            onClick={handleClose}
+            disabled={isLoading}
             className="p-2 hover:bg-gray-100 rounded-full transition-colors cursor-pointer"
             type="button"
           >
             <Icon icon="mdi:close" className="w-5 h-5 sm:w-6 sm:h-6 text-black" />
           </button>
         </div>
-        
+
         {/* Modal Content */}
         <div className="px-4 sm:px-6 lg:px-8 pb-4 sm:pb-6 lg:pb-8">
-        {error && (
+          {error && (
             <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
               {error}
             </div>
@@ -182,23 +156,20 @@ const AddSubtopicModal = ({ isOpen, onClose, onSubmit, topicId, isLoading }) => 
                   />
                   <ErrorMessage name="title" component="div" className="text-red-500 text-sm mt-1" />
                 </div>
-            
+
                 {/* Contents Field */}
                 <div>
                   <label className="block text-base font-semibold text-gray-900 mb-3">
                     Contents
                   </label>
-                  <div >
-
-                  <RichTextEditor
-                    value={values.content}
-                    
-                    onChange={useCallback((content) => setFieldValue('content', content), [setFieldValue])}
-                    placeholder="Enter detailed content here..."
-                    disabled={isLoading}
-                  />
+                  <div>
+                    <RichTextEditor
+                      value={values.content}
+                      onChange={useCallback((content) => setFieldValue('content', content), [setFieldValue])}
+                      placeholder="Enter detailed content here..."
+                      disabled={isLoading}
+                    />
                   </div>
-                
                 </div>
 
                 {/* Google Form Links Section */}
@@ -221,6 +192,7 @@ const AddSubtopicModal = ({ isOpen, onClose, onSubmit, topicId, isLoading }) => 
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* Form Link 1 */}
                     <div>
                       <h4 className="text-base font-semibold text-black mb-3">Form Link 1</h4>
                       <div className="space-y-3">
@@ -248,7 +220,8 @@ const AddSubtopicModal = ({ isOpen, onClose, onSubmit, topicId, isLoading }) => 
                         </div>
                       </div>
                     </div>
-                    
+
+                    {/* Form Link 2 */}
                     <div>
                       <h4 className="text-base font-semibold text-black mb-3">Form Link 2</h4>
                       <div className="space-y-3">
@@ -276,9 +249,125 @@ const AddSubtopicModal = ({ isOpen, onClose, onSubmit, topicId, isLoading }) => 
                         </div>
                       </div>
                     </div>
+
+                    {/* Form Link 3 */}
+                    <div>
+                      <h4 className="text-base font-semibold text-black mb-3">Form Link 3</h4>
+                      <div className="space-y-3">
+                        <div>
+                          <label className="block text-sm font-medium text-black mb-2">Link name</label>
+                          <Field
+                            name="formLink3Name"
+                            type="text"
+                            disabled={!values.formLinksEnabled || isLoading}
+                            className="w-full px-3 py-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent text-black text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
+                            placeholder="Enter link name"
+                          />
+                          <ErrorMessage name="formLink3Name" component="div" className="text-red-500 text-sm mt-1" />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-black mb-2">Google Form Link</label>
+                          <Field
+                            name="formLink3Url"
+                            type="url"
+                            disabled={!values.formLinksEnabled || isLoading}
+                            className="w-full px-3 py-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent text-black text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
+                            placeholder="https://forms.google.com/..."
+                          />
+                          <ErrorMessage name="formLink3Url" component="div" className="text-red-500 text-sm mt-1" />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Form Link 4 */}
+                    <div>
+                      <h4 className="text-base font-semibold text-black mb-3">Form Link 4</h4>
+                      <div className="space-y-3">
+                        <div>
+                          <label className="block text-sm font-medium text-black mb-2">Link name</label>
+                          <Field
+                            name="formLink4Name"
+                            type="text"
+                            disabled={!values.formLinksEnabled || isLoading}
+                            className="w-full px-3 py-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent text-black text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
+                            placeholder="Enter link name"
+                          />
+                          <ErrorMessage name="formLink4Name" component="div" className="text-red-500 text-sm mt-1" />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-black mb-2">Google Form Link</label>
+                          <Field
+                            name="formLink4Url"
+                            type="url"
+                            disabled={!values.formLinksEnabled || isLoading}
+                            className="w-full px-3 py-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent text-black text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
+                            placeholder="https://forms.google.com/..."
+                          />
+                          <ErrorMessage name="formLink4Url" component="div" className="text-red-500 text-sm mt-1" />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Form Link 5 */}
+                    <div>
+                      <h4 className="text-base font-semibold text-black mb-3">Form Link 5</h4>
+                      <div className="space-y-3">
+                        <div>
+                          <label className="block text-sm font-medium text-black mb-2">Link name</label>
+                          <Field
+                            name="formLink5Name"
+                            type="text"
+                            disabled={!values.formLinksEnabled || isLoading}
+                            className="w-full px-3 py-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent text-black text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
+                            placeholder="Enter link name"
+                          />
+                          <ErrorMessage name="formLink5Name" component="div" className="text-red-500 text-sm mt-1" />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-black mb-2">Google Form Link</label>
+                          <Field
+                            name="formLink5Url"
+                            type="url"
+                            disabled={!values.formLinksEnabled || isLoading}
+                            className="w-full px-3 py-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent text-black text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
+                            placeholder="https://forms.google.com/..."
+                          />
+                          <ErrorMessage name="formLink5Url" component="div" className="text-red-500 text-sm mt-1" />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Form Link 6 */}
+                    <div>
+                      <h4 className="text-base font-semibold text-black mb-3">Form Link 6</h4>
+                      <div className="space-y-3">
+                        <div>
+                          <label className="block text-sm font-medium text-black mb-2">Link name</label>
+                          <Field
+                            name="formLink6Name"
+                            type="text"
+                            disabled={!values.formLinksEnabled || isLoading}
+                            className="w-full px-3 py-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent text-black text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
+                            placeholder="Enter link name"
+                          />
+                          <ErrorMessage name="formLink6Name" component="div" className="text-red-500 text-sm mt-1" />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-black mb-2">Google Form Link</label>
+                          <Field
+                            name="formLink6Url"
+                            type="url"
+                            disabled={!values.formLinksEnabled || isLoading}
+                            className="w-full px-3 py-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent text-black text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
+                            placeholder="https://forms.google.com/..."
+                          />
+                          <ErrorMessage name="formLink6Url" component="div" className="text-red-500 text-sm mt-1" />
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
-            
+
                 {/* Action Buttons */}
                 <div className="flex justify-end space-x-3 pt-6 border-t border-gray-200">
                   <button
