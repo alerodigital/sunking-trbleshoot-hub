@@ -75,14 +75,14 @@ const HeroSection = ({ onSearchSelect, onTopicSelect }) => {
         </div>
         
         {/* Content Container */}
-        <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          {/* Header Text - Responsive Typography */}
+        <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 ">
+         
+          {/* Search Bar - Responsive Width and Height */}
+          <div className="mx-auto w-full max-w-xs sm:max-w-md md:max-w-lg lg:max-w-2xl xl:max-w-3xl md:pb-6 relative">
+               {/* Header Text - Responsive Typography */}
           <h1 className="font-urbanist font-extrabold text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl leading-tight sm:leading-tight md:leading-tight lg:leading-tight xl:leading-tight text-gray-900 mb-6 sm:mb-8 md:mb-10 tracking-normal">
             Troubleshooting hub
           </h1>
-          
-          {/* Search Bar - Responsive Width and Height */}
-          <div className="mx-auto w-full max-w-xs sm:max-w-md md:max-w-lg lg:max-w-2xl xl:max-w-3xl md:pb-6 relative">
             <form onSubmit={handleSearch} className="relative">
             <div className="relative flex items-center bg-white rounded-md border border-gray-300 shadow-sm h-12 sm:h-14 md:h-16 gap-2">
               <div className="absolute left-3 sm:left-4 flex items-center pointer-events-none">
