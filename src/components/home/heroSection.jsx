@@ -63,19 +63,19 @@ const HeroSection = ({ onSearchSelect, onTopicSelect }) => {
   };
 
   return (
-    <>
-      <div className="relative pt-8 sm:pt-12 md:pt-16 lg:pt-24 pb-6 sm:pb-8 md:pb-12 lg:pb-16  bg-[#F7F5F0]">
+    <div className='flex flex-col gap-0'>
+      <div className="relative pt-8 sm:pt-12 md:pt-16 lg:pt-24 pb-6 sm:pb-8 md:pb-12 lg:pb-16  bg-[#F7F5F0] ">
         {/* Container for the sun graphic */}
-        <div className="absolute top-0 right-0 h-full w-full max-w-lg lg:max-w-2xl transform translate-x-1/2 -translate-y-1/2 opacity-100 hidden lg:block !z-2">
+        <div className="absolute  bottom-0 right-0  h-full w-full  lg:max-w-2xl inset-x-0   lg:inset-x-1/2    transform lg:translate-x-1/2 translate-y-1/2 lg:translate-y-1/6  ">
           <img
             src="/sun.png"
             alt="Sun rays graphic"
-            className="w-full h-full object-contain z-2"
+            className="w-full h-full lg:h-[500px]  object-contain"
           />
         </div>
         
         {/* Content Container */}
-        <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 ">
+        <div className="relative  container mx-auto px-4 sm:px-6 lg:px-8 z-50">
          
           {/* Search Bar - Responsive Width and Height */}
           <div className="mx-auto w-full max-w-xs sm:max-w-md md:max-w-lg lg:max-w-2xl xl:max-w-3xl md:pb-6 relative">
@@ -83,7 +83,7 @@ const HeroSection = ({ onSearchSelect, onTopicSelect }) => {
           <h1 className="font-urbanist font-extrabold text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl leading-tight sm:leading-tight md:leading-tight lg:leading-tight xl:leading-tight text-gray-900 mb-6 sm:mb-8 md:mb-10 tracking-normal">
             Troubleshooting hub
           </h1>
-            <form onSubmit={handleSearch} className="relative">
+            <form onSubmit={handleSearch} className="relative z-40">
             <div className="relative flex items-center bg-white rounded-md border border-gray-300 shadow-sm h-12 sm:h-14 md:h-16 gap-2">
               <div className="absolute left-3 sm:left-4 flex items-center pointer-events-none">
                 <Icon icon="material-symbols:search" className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400" />
@@ -120,7 +120,7 @@ const HeroSection = ({ onSearchSelect, onTopicSelect }) => {
 
               {/* Search Results Dropdown */}
               {showSearchResults && searchResults.length > 0 && (
-                <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-md shadow-lg z-50 max-h-60 overflow-y-auto">
+                <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-md shadow-lg !z-50 max-h-60 overflow-y-auto">
                   {searchResults.map((result) => 
                   {
                     const topic = topics.find(t => t.id === result.topicId);
@@ -141,7 +141,7 @@ const HeroSection = ({ onSearchSelect, onTopicSelect }) => {
 
                 {/* No Results Message */}
               {showSearchResults && searchTerm.length > 2 && searchResults.length === 0 && !isSearching && (
-                <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-md shadow-lg z-50 p-4">
+                <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-md shadow-lg !z-50 p-4">
                   <p className="text-sm text-gray-500">No results found for "{searchTerm}"</p>
                 </div>
               )}
@@ -152,8 +152,8 @@ const HeroSection = ({ onSearchSelect, onTopicSelect }) => {
       </div>
 
       {/* Orange Section - Responsive */}
-      <div className="bg-[#F36744] py-8 sm:py-10 md:py-12">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex justify-center">
+      <div className="bg-[#F36744] py-8 sm:py-10 md:py-12 z-40">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex justify-center z-40">
           <div className="w-full max-w-xs sm:max-w-md md:max-w-lg lg:max-w-2xl xl:max-w-4xl flex flex-col gap-3 sm:gap-3.5 text-start">
             <p className="font-urbanist font-normal text-lg sm:text-xl md:text-2xl leading-6 sm:leading-7 md:leading-8 text-black">
               This is a One-Stop Help Center that guides you to solve issues, keeping both the field and Service Desk efficient.
@@ -165,7 +165,7 @@ const HeroSection = ({ onSearchSelect, onTopicSelect }) => {
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

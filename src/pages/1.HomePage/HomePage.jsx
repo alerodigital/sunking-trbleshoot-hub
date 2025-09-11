@@ -23,14 +23,14 @@ const HomePage = () => {
   };
 
   return (
-    <div className='overflow-hidden'>
+    <div className='overflow-hidden min-h-[100vh] h-full'>
       {/* Hero Section */}
       <HeroSection  onSearchSelect={handleSearchSelect}
         onTopicSelect={handleTopicSelect}  className="bg-[#F5F3F0]" />
 
 
       {/* Topics and FAQs Section */}
-      <TopicSection className="bg-white " searchTerm={searchTerm}
+      <TopicSection className="bg-white" searchTerm={searchTerm}
         selectedTopicId={selectedTopicId}
         selectedFAQId={selectedFAQId} />
     </div>
