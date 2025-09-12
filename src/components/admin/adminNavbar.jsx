@@ -11,10 +11,10 @@ const AdminNavbar = ({ onMenuClick }) => {
   const handleLogout = async () => {
     try {
       await signOut(); // Use the signOut function from the hook
-      console.log('Logged out successfully');
+      // console.log('Logged out successfully');
       navigate('/login');
     } catch (error) {
-      console.error('Logout error:', error);
+      // console.error('Logout error:', error);
       // Fallback: navigate to login even if logout fails
       navigate('/login');
     }

@@ -98,7 +98,7 @@ const AddSubtopicModal = ({ isOpen, onClose, onSubmit, topicId, isLoading }) => 
       resetForm();
       onClose();
     } catch (error) {
-      console.error('Error submitting subtopic:', error);
+      // console.error('Error submitting subtopic:', error);
       setError(error.message || 'Failed to add subtopic. Please try again.');
     }
   }, [onSubmit, onClose]);

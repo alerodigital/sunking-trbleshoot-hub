@@ -112,7 +112,7 @@ const EditSubtopicModal = ({ isOpen, onClose, subtopic, onSave, isLoading }) => 
       resetForm();
       onClose();
     } catch (error) {
-      console.error('Error updating subtopic:', error);
+      // console.error('Error updating subtopic:', error);
       setError(error.message || 'Failed to update subtopic. Please try again.');
     }
   };

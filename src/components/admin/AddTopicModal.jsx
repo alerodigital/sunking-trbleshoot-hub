@@ -23,7 +23,7 @@ const AddTopicModal = ({ isOpen, onClose, onSubmit, isLoading }) => {
       resetForm();
       onClose();
     } catch (error) {
-      console.error('Error submitting topic:', error);
+      // console.error('Error submitting topic:', error);
       setError(error.message || 'Failed to add topic. Please try again.');
     }
   };

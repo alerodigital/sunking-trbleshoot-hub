@@ -9,17 +9,22 @@ const SafeHTMLRenderer = ({ html, className = '' }) => {
     // Load DOMPurify from CDN
     const script = document.createElement('script');
     script.src = 'https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.5/purify.min.js';
-    script.integrity = 'sha512-KqUc2WbRcMyeshNkbA1l2l5+GB//XIIXXYct5g9NM0jwO0Q+CpOo+J0ZkL6pFNmGkO9L7uQ8oWO3uQGoVgUaww==';
     script.crossOrigin = 'anonymous';
     script.referrerPolicy = 'no-referrer';
     
     script.onload = () => {
-      setDOMPurify(window.DOMPurify);
-      setIsPurifyLoaded(true);
+      // Check if DOMPurify is available and has the sanitize method
+      if (window.DOMPurify && typeof window.DOMPurify.sanitize === 'function') {
+        setDOMPurify(window.DOMPurify);
+        setIsPurifyLoaded(true);
+      } else {
+        console.warn('DOMPurify loaded but sanitize method not available');
+        setIsPurifyLoaded(true); // Still set to true to render without purification
+      }
     };
     
     script.onerror = () => {
-      console.error('Failed to load DOMPurify from CDN');
+      console.warn('Failed to load DOMPurify from CDN, using fallback sanitization');
       setIsPurifyLoaded(true); // Still set to true to render without purification
     };
     
@@ -33,8 +38,6 @@ const SafeHTMLRenderer = ({ html, className = '' }) => {
     };
   }, []);
 
-  if (!html) return null;
-
   // If DOMPurify is not loaded yet, show a loading state
   if (!isPurifyLoaded) {
     return (
@@ -47,18 +50,31 @@ const SafeHTMLRenderer = ({ html, className = '' }) => {
 
   // Sanitize HTML
   let sanitizedHTML = html;
-  if (DOMPurify) {
-    sanitizedHTML = DOMPurify.sanitize(html, {
-      ALLOWED_TAGS: [
-        'p', 'br', 'b', 'strong', 'i', 'em', 'u', 'ul', 'ol', 'li', 
-        'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'code', 'pre',
-        'span', 'div', 'a'
-      ],
-      ALLOWED_ATTR: ['class', 'style', 'href', 'target', 'rel'],
-      ADD_ATTR: ['target'],
-      ADD_TAGS: ['iframe'], // Allow iframes if needed
-      ALLOWED_URI_REGEXP: /^(?:(?:(?:f|ht)tps?|mailto|tel|data):|[^a-z]|[a-z+.\-]+(?:[^a-z+.\-:]|$))/i
-    });
+  if (DOMPurify && typeof DOMPurify.sanitize === 'function') {
+    try {
+      sanitizedHTML = DOMPurify.sanitize(html, {
+        ALLOWED_TAGS: [
+          'p', 'br', 'b', 'strong', 'i', 'em', 'u', 'ul', 'ol', 'li', 
+          'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'code', 'pre',
+          'span', 'div', 'a'
+        ],
+        ALLOWED_ATTR: ['class', 'style', 'href', 'target', 'rel'],
+        ADD_ATTR: ['target'],
+        ADD_TAGS: ['iframe'], // Allow iframes if needed
+        ALLOWED_URI_REGEXP: /^(?:(?:(?:f|ht)tps?|mailto|tel|data):|[^a-z]|[a-z+.\-]+(?:[^a-z+.\-:]|$))/i
+      });
+    } catch (error) {
+      console.warn('Error sanitizing HTML with DOMPurify:', error);
+      // Fall back to basic sanitization
+      sanitizedHTML = html
+        .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+        .replace(/<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi, '')
+        .replace(/on\w+="[^"]*"/g, '')
+        .replace(/on\w+='[^']*'/g, '')
+        .replace(/javascript:/gi, '')
+        .replace(/expression\(/gi, '')
+        .replace(/vbscript:/gi, '');
+    }
   } else {
     // Enhanced basic sanitization as fallback
     sanitizedHTML = html
@@ -71,6 +87,8 @@ const SafeHTMLRenderer = ({ html, className = '' }) => {
       .replace(/vbscript:/gi, '');
   }
 
+  if (!html) return null;
+
   return (
     <div className={`safe-html-content ${className}`}>
       <div 
@@ -79,7 +97,7 @@ const SafeHTMLRenderer = ({ html, className = '' }) => {
       />
       
       {/* Inline styles for consistent rendering */}
-      <style jsx>{`
+      <style jsx="true">{`
         .safe-html-content {
           line-height: 1.6;
          

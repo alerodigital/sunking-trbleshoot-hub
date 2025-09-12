@@ -75,7 +75,7 @@ const TopicSection = ({ searchTerm = '', selectedTopicId = '', selectedFAQId = '
   const getPopularSubtopicsToDisplay = () => {
     let subtopicsToShow = popularSubtopics;
 
-    console.log("subtopicsToShow", subtopicsToShow)
+    // console.log("subtopicsToShow", subtopicsToShow)
     
     // Filter by search term if provided
     if (searchTerm) {

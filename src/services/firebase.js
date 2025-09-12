@@ -22,9 +22,9 @@ try {
     app = initializeApp(firebaseConfig);
     auth = getAuth(app);
     db = getFirestore(app);
-    console.log('Firebase initialized successfully');
+    // console.log('Firebase initialized successfully');
   } catch (error) {
-    console.error('Firebase initialization error:', error);
+    // console.error('Firebase initialization error:', error);
     // Fallback: try to initialize with empty config to prevent app crash
     try {
       app = initializeApp({});
