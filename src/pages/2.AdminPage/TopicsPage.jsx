@@ -8,6 +8,7 @@ import {
   createColumnHelper,
 } from '@tanstack/react-table';
 import AddTopicModal from '../../components/admin/AddTopicModal.jsx';
+import EditTopicModal from '../../components/admin/EditTopicModal.jsx'; // Import the new edit modal
 import DeleteConfirmationModal from '../../components/admin/DeleteConfirmationModal.jsx';
 import { useTopics } from '../../hooks/useTopics'; // Import the topics hook
 
@@ -15,11 +16,13 @@ const columnHelper = createColumnHelper();
 
 const TopicsPage = () => {
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [selectedTopic, setSelectedTopic] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [topicToDelete, setTopicToDelete] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const navigate = useNavigate();
-  const { useTopicsQuery, addTopic, deleteTopic, isLoading } = useTopics();
+  const { useTopicsQuery, addTopic, updateTopic, deleteTopic, isLoading } = useTopics();
   const { data: topics = [], error, refetch } = useTopicsQuery();
 
   const columns = useMemo(
@@ -53,6 +56,13 @@ const TopicsPage = () => {
             </button>
 
             <button
+              onClick={() => handleEditClick(row.original)}
+              className="bg-white border border-blue-600 text-blue-600 rounded-full px-4 py-1 text-sm font-medium hover:bg-blue-50 transition-colors cursor-pointer"
+              title="Edit topic"
+            >
+              Edit
+            </button>
+            <button
               onClick={() => handleDeleteClick(row.original)}
               className="bg-white border border-red-600 text-red-600 rounded-full px-4 py-1 text-sm font-medium hover:bg-red-50 transition-colors cursor-pointer"
               title="Delete topic"
@@ -83,6 +93,12 @@ const TopicsPage = () => {
     }
   };
 
+  const handleEditClick = (topic) => {
+ 
+    setSelectedTopic(topic);
+    setShowEditModal(true);
+  };
+
   const handleDeleteClick = (topic) => {
     setTopicToDelete(topic);
     setShowDeleteModal(true);
@@ -107,6 +123,23 @@ const TopicsPage = () => {
   const handleCancelDelete = () => {
     setShowDeleteModal(false);
     setTopicToDelete(null);
+  };
+
+  const handleCancelEdit = () => {
+    setShowEditModal(false);
+    setSelectedTopic(null);
+  };
+
+  const handleUpdateTopic = async (topicData) => {
+    try {
+     
+      await updateTopic({id:selectedTopic?.id, updates: topicData});
+      setShowEditModal(false);
+      setSelectedTopic(null);
+    } catch (error) {
+      console.error('Error updating topic:', error);
+      throw error; // Re-throw to handle in the modal
+    }
   };
 
 
@@ -200,6 +233,16 @@ const TopicsPage = () => {
           onClose={() => setShowAddModal(false)}
           onSubmit={handleAddTopic}
           isLoading={isLoading}
+        />
+      )}
+
+{showEditModal && (
+        <EditTopicModal
+          isOpen={showEditModal}
+          onClose={handleCancelEdit}
+          onSubmit={handleUpdateTopic}
+          isLoading={isLoading}
+          initialData={selectedTopic}
         />
       )}
 
