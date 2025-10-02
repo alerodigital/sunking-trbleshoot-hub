@@ -160,7 +160,7 @@ const HeroSection = ({ onSearchSelect, onTopicSelect }) => {
             </p>
             <p className="font-sans font-normal text-sm sm:text-base leading-6 sm:leading-7 md:leading-8 text-black">
               For more information, or if you have queries that aren't answered here, please{' '}
-              <span className="font-sans font-normal text-sm sm:text-base leading-6 sm:leading-7 md:leading-8 underline decoration-solid cursor-pointer">contact us</span> for more details.
+              <a href="/contact"><span className="font-sans font-normal text-sm sm:text-base leading-6 sm:leading-7 md:leading-8 underline decoration-solid cursor-pointer">contact us</span></a> for more details.
             </p>
           </div>
         </div>
