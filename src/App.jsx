@@ -9,6 +9,7 @@ import ResetPassword from './pages/0.Auth/resetPassword.jsx';
 import Register from './pages/0.Auth/Register.jsx';
 import { AnimatePresence } from 'framer-motion';
 import { useAuth } from './hooks/useAuth.js';
+import ContactPage from './pages/1.HomePage/ContactPage.jsx';
 
 // Loading Component
 const LoadingSpinner = () => (
@@ -70,6 +71,7 @@ const AppContent = () => {
         <div className={isAuthPage || isAdminPage ? "min-h-screen" : "flex-grow"}>
           <Routes>
             <Route path="/" element={<HomePage />} />
+            <Route path="/contact" element={<ContactPage />} />
             <Route
               path="/admin/*"
               element={<ProtectedRoute>
