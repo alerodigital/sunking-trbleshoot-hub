@@ -8,7 +8,7 @@ const ContactPage = () => {
                 {/** Hero Section */}
                 <div className="relative pt-8 sm:pt-12 md:pt-16 lg:pt-24 pb-6 sm:pb-8 md:pb-12 lg:pb-16 bg-[#F7F5F0] overflow-hidden">
                     {/* Container for the sun graphic */}
-                    <div className="absolute hidden md:flex bottom-0 right-0  transform translate-y-1/6 ">
+                    <div className="absolute hidden lg:flex bottom-0 right-0  transform translate-y-1/6 ">
                         <img
                             src="/contactimg.png"
                             alt="Sun rays graphic"
@@ -17,12 +17,12 @@ const ContactPage = () => {
                     </div>
 
                     {/* Content Container */}
-                    <div className="relative  container mx-auto md:mx-0  px-4 sm:px-6 lg:px-8 z-50 md:max-w-min">
+                    <div className="relative  container mx-auto lg:mx-0  px-4 sm:px-6 lg:px-8 z-50 lg:max-w-min">
                         {/* Header Text - Responsive Typography */}
-                        <h1 className="font-urbanist w-full font-extrabold text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-7xl leading-tight sm:leading-tight md:leading-tight lg:leading-tight xl:leading-tight text-gray-900  tracking-normal text-nowrap text-center md:text-left">
+                        <h1 className="font-urbanist w-full font-extrabold text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-7xl leading-tight sm:leading-tight md:leading-tight lg:leading-tight xl:leading-tight text-gray-900  tracking-normal text-nowrap text-center lg:text-left">
                             Contact Us
                         </h1>
-                        <p className="font-sans font-normal text-sm sm:text-base leading-6 sm:leading-7 md:leading-8 text-black text-center md:text-left ">
+                        <p className="font-sans font-normal text-sm sm:text-base leading-6 sm:leading-7 md:leading-8 text-black text-center lg:text-left ">
                             Send us your comments, and enquiries using the Kazi Feedback Module.
                         </p>
                     </div>
@@ -52,7 +52,7 @@ const ContactPage = () => {
 
                 <div className="relative pt-8 sm:pt-12 md:pt-16 lg:pt-24 pb-6 sm:pb-8 md:pb-12 lg:pb-16 bg-[#F7F5F0] overflow-hidden">
 
-                    <div className="relative  container mx-auto md:mx-0  px-4 sm:px-6 lg:px-8 z-50">
+                    <div className="relative  container mx-auto lg:mx-0 sm:max-w-md md:max-w-lg  px-4 sm:px-6 lg:px-8 z-50">
                         <h1 className="font-urbanist font-bold text-lg sm:text-xl md:text-2xl leading-6 sm:leading-7 md:leading-8 text-black">
                             Contacts
                         </h1>
